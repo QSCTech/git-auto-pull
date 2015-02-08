@@ -1,0 +1,24 @@
+#!/bin/sh
+
+do_systemd_inst() {
+	cp /usr/share/git-auto-pull/git-auto-pull.service /lib/systemd/system/git-auto-pull.service
+	chmod 755 /lib/systemd/system/git-auto-pull.service
+	chown root:root /lib/systemd/system/git-auto-pull.service
+	systemctl daemon-reload
+	systemctl enable git-auto-pull.service
+	systemctl restart git-auto-pull.service
+}
+
+do_sysvinit_inst() {
+	cp /usr/share/git-auto-pull/git-auto-pull /etc/init.d/git-auto-pull
+	chmod 755 /etc/init.d/git-auto-pull
+	chown root:root /etc/init.d/git-auto-pull
+	update-rc.d git-auto-pull defaults 2>&1 >/dev/null || chkconfig git-auto-pull on || true
+	service git-auto-pull restart
+}
+
+pidof systemd 2>&1 >/dev/null && do_systemd_inst || do_sysvinit_inst || true
+cp /usr/share/git-auto-pull/qsc.list /etc/apt/sources.list.d/qsc.list
+apt-key add /usr/share/git-auto-pull/qsc.public.key 2>&1 >/dev/null || true
+
+

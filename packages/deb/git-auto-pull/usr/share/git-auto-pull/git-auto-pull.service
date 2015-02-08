@@ -1,0 +1,14 @@
+[Unit]
+Description=GitLab Webhook auto pull service
+After=network.target remote-fs.target
+
+[Service]
+Type=forking
+PIDFile=/var/run/git-auto-pull.pid
+ExecStart=/usr/sbin/git-auto-pull
+ExecStop=/bin/kill -WINCH ${MAINPID}
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+

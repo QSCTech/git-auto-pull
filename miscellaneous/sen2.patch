@@ -1,0 +1,19 @@
+--- CMakeLists.txt2	2015-02-07 11:13:35.231557731 +0800
++++ CMakeLists.txt	2015-02-07 11:14:05.768159100 +0800
+@@ -157,16 +157,9 @@
+ 		FIND_PACKAGE(OpenSSL)
+ 	ENDIF ()
+ 
+-	FIND_PACKAGE(HTTP_Parser)
+-	IF (HTTP_PARSER_FOUND AND HTTP_PARSER_VERSION_MAJOR EQUAL 2)
+-		INCLUDE_DIRECTORIES(${HTTP_PARSER_INCLUDE_DIRS})
+-		LINK_LIBRARIES(${HTTP_PARSER_LIBRARIES})
+-		SET(LIBGIT2_PC_LIBS "${LIBGIT2_PC_LIBS} -lhttp_parser")
+-	ELSE()
+ 		MESSAGE(STATUS "http-parser was not found or is too old; using bundled 3rd-party sources.")
+ 		INCLUDE_DIRECTORIES(deps/http-parser)
+ 		FILE(GLOB SRC_HTTP deps/http-parser/*.c deps/http-parser/*.h)
+-	ENDIF()
+ ENDIF()
+ 
+ # Specify sha1 implementation

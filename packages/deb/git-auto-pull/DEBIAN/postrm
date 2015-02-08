@@ -1,0 +1,10 @@
+#!/bin/sh
+
+rm -rf /etc/init.d/git-auto-pull
+[ -f /var/run/git-auto-pull.pid ] && (kill -9 `cat /var/run/git-auto-pull.pid` 2>&1 >/dev/null || true)
+rm -rf /var/run/git-auto-pull.pid
+pidof systemd 2>&1 >/dev/null && systemctl stop git-auto-pull
+pidof systemd 2>&1 >/dev/null && systemctl disable git-auto-pull
+rm -rf /lib/systemd/system/git-auto-pull.service
+pidof systemd 2>&1 >/dev/null && systemctl daemon-reload || true
+

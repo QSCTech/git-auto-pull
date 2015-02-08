@@ -1,0 +1,25 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -213,17 +213,11 @@ ELSE()
+ ENDIF()
+ 
+ # Optional external dependency: libssh2
+-IF (USE_SSH)
+-	PKG_CHECK_MODULES(LIBSSH2 libssh2)
+-ENDIF()
+-IF (LIBSSH2_FOUND)
+-	ADD_DEFINITIONS(-DGIT_SSH)
+-	INCLUDE_DIRECTORIES(${LIBSSH2_INCLUDE_DIR})
+-	SET(LIBGIT2_PC_REQUIRES "${LIBGIT2_PC_REQUIRES} libssh2")
+-	SET(SSH_LIBRARIES ${LIBSSH2_LIBRARIES})
+-ELSE()
+-	MESSAGE(STATUS "LIBSSH2 not found. Set CMAKE_PREFIX_PATH if it is installed outside of the default search path.")
+-ENDIF()
++SET(LIBSSH2_FOUND "yes")
++ADD_DEFINITIONS(-DGIT_SSH)
++INCLUDE_DIRECTORIES("SEN_INCLUDE")
++SET(LIBGIT2_PC_REQUIRES "${LIBGIT2_PC_REQUIRES} libssh2")
++SET(SSH_LIBRARIES "SEN_LIB")
+ 
+ # Optional external dependency: libgssapi
+ IF (USE_GSSAPI)

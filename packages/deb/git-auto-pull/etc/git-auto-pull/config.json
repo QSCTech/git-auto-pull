@@ -1,0 +1,12 @@
+{
+	"repo": [
+		{
+			"ref": "refs/heads/deploy",
+			"repo_name": "NewTide",
+			"url": "git@git.zjuqsc.com:fnlCtrl/newtide.git",
+			"branch": "deploy",
+			"path": "/home/fnlctrl/newtide",
+			"user": "fnlctrl"
+		}
+	]
+}
