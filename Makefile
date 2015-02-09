@@ -1,4 +1,4 @@
-VERSION=0.4.52
+VERSION=0.4.53
 
 all: static64 static32
 

@@ -59,7 +59,7 @@ echo "" >> git-auto-pull.spec
 echo "%post" >> git-auto-pull.spec
 echo "systemctl daemon-reload || true" >> git-auto-pull.spec
 echo "cp /usr/share/git-auto-pull/qsc.public.key /etc/pki/rpm-gpg/RPM-GPG-KEY-QSC-COMP66 || true" >> git-auto-pull.spec
-echo "rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-QSC-COMP66 || true" >> git-auto-pull.spec
+echo "rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-QSC-COMP66 2>&1 >/dev/null || true" >> git-auto-pull.spec
 echo "systemctl restart git-auto-pull || true" >> git-auto-pull.spec
 echo "cp /usr/share/git-auto-pull/qsc.repo /etc/yum.repos.d/qsc.repo || true" >> git-auto-pull.spec
 echo "" >> git-auto-pull.spec
