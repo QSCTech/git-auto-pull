@@ -432,7 +432,6 @@ int main(int argc, char * argv[]) {
 	}
 	git_libgit2_init();
 	// Then set up daemon
-	daemon(0, 1);
 	freopen(LOG_PATH, "a", stdout);
 	freopen(LOG_ERR_PATH, "a", stderr);
 	printf("%s: Version %s\n", argv[0], VERSION);
@@ -441,6 +440,7 @@ int main(int argc, char * argv[]) {
 		fprintf(stderr, "Error: cannot read config\n");
 		return 1;
 	}
+	daemon(0, 1);
 	bind_port();
 	int pid = getpid();
 	FILE * fp;
