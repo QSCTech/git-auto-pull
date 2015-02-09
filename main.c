@@ -43,12 +43,13 @@ socklen_t sin_size;
 struct sigaction sa;
 
 // GitLab Repositories stuff
-char fetch_branch[100][64];
-char match_ref[100][255];
-char git_url[100][255];
-char repo_name[100][255];
-char repo_path[100][255];
-char git_user[100][255];
+const char * fetch_branch[1000];
+const char * match_ref[1000];
+const char * git_url[1000];
+const char * repo_name[1000];
+const char * repo_path[1000];
+const char * git_user[1000];
+const char * scr_after_pull[1000];
 int repo_cnt;
 git_cred * my_cred;
 
@@ -56,6 +57,18 @@ void operate_git_pull(int i);
 
 void sigchld_handler(int s) {
 	while (waitpid(-1, NULL, WNOHANG) > 0);
+}
+
+void printerr(const char * format, ...) {
+	va_list arglist;
+	printf("Error: ");
+	fprintf(stderr, "Error: ");
+	va_start(arglist, format);
+	vprintf(format, arglist);
+	vfprintf(stderr, format, arglist);
+	va_end(arglist);
+	printf("\n");
+	fprintf(stderr, "\n");
 }
 
 int read_conf() {
@@ -77,21 +90,84 @@ int read_conf() {
 	}
 	int i, arr_len = json_object_array_length(j_repo);
 	repo_cnt = arr_len;
+	if (repo_cnt > 1000) {
+		printerr("too many repos! I can only handle 1000.");
+		return 1;
+	}
 	for (i = 0; i < arr_len; i++) {
 		json_object * j_repoa = json_object_array_get_idx(j_repo, i);
-		json_object * j_ref, * j_repo_name, * j_url, * j_branch, * j_path, * j_user;
+		json_object * j_ref, * j_repo_name, * j_url, * j_branch, * j_path, * j_user, * j_after_pull;
 		json_object_object_get_ex(j_repoa, "ref", &j_ref);
 		json_object_object_get_ex(j_repoa, "repo_name", &j_repo_name);
 		json_object_object_get_ex(j_repoa, "url", &j_url);
 		json_object_object_get_ex(j_repoa, "branch", &j_branch);
 		json_object_object_get_ex(j_repoa, "path", &j_path);
 		json_object_object_get_ex(j_repoa, "user", &j_user);
-		strcpy(fetch_branch[i], json_object_get_string(j_branch));
-		strcpy(git_url[i], json_object_get_string(j_url));
-		strcpy(match_ref[i], json_object_get_string(j_ref));
-		strcpy(repo_name[i], json_object_get_string(j_repo_name));
-		strcpy(repo_path[i], json_object_get_string(j_path));
-		strcpy(git_user[i], json_object_get_string(j_user));
+		json_object_object_get_ex(j_repoa, "after_pull", &j_after_pull);
+		if (json_object_get_type(j_branch) != json_type_string) {
+			printerr("field branch should be a valid string");
+			return 1;
+		}
+		fetch_branch[i] = json_object_get_string(j_branch);
+		if (strlen(fetch_branch[i]) > 255) {
+			printerr("field branch: string length exceeded, max length is 255");
+			return 1;
+		}
+		if (json_object_get_type(j_url) != json_type_string) {
+			printerr("field url should be a valid string");
+			return 1;
+		}
+		git_url[i] = json_object_get_string(j_url);
+		if (strlen(git_url[i]) > 255) {
+			printerr("field url: string length exceeded, max length is 255");
+			return 1;
+		}
+		if (json_object_get_type(j_ref) != json_type_string) {
+			printerr("field ref should be a valid string");
+			return 1;
+		}
+		match_ref[i] = json_object_get_string(j_ref);
+		if (strlen(match_ref[i]) > 255) {
+			printerr("field ref: string length exceeded, max length is 255");
+			return 1;
+		}
+		if (json_object_get_type(j_repo_name) != json_type_string) {
+			printerr("field repo_name should be a valid string");
+			return 1;
+		}
+		repo_name[i] = json_object_get_string(j_repo_name);
+		if (strlen(repo_name[i]) > 255) {
+			printerr("field repo_name: string length exceeded, max length is 255");
+			return 1;
+		}
+		if (json_object_get_type(j_path) != json_type_string) {
+			printerr("field path should be a valid string");
+			return 1;
+		}
+		repo_path[i] = json_object_get_string(j_path);
+		if (strlen(repo_path[i]) > 255) {
+			printerr("field path: string length exceeded, max length is 255");
+			return 1;
+		}
+		if (json_object_get_type(j_user) != json_type_string) {
+			printerr("field user should be a valid string");
+			return 1;
+		}
+		git_user[i] = json_object_get_string(j_user);
+		if (strlen(git_user[i]) > 64) {
+			printerr("field user: string length exceeded, max length is 64");
+			return 1;
+		}
+		if (json_object_get_type(j_after_pull) != json_type_string) {
+			// Optional
+			scr_after_pull[i] = "";
+		} else {
+			scr_after_pull[i] = json_object_get_string(j_after_pull);
+			if (strlen(scr_after_pull[i]) > 2048) {
+				printerr("field after_pull: string length exceeded. max length is 2048");
+				return 1;
+			}
+		}
 		printf("Read %d: Url: %s\n", i, git_url[i]);
 	}
 	return 0;
@@ -241,7 +317,7 @@ int operate_get_cred(git_cred **cred, const char *url, const char *user_from_url
 }
 
 void operate_git_pull(int i) {
-	char git_dir[255];
+	char git_dir[1000];
 	sprintf(git_dir, "%s/.git", repo_path[i]);
 	git_repository * repo;
 	int error = git_repository_open(&repo, git_dir);
@@ -249,7 +325,7 @@ void operate_git_pull(int i) {
 		libgit2_handle_err(i);
 		return;
 	}
-	char key_path[255], pubkey_path[255];
+	char key_path[1000], pubkey_path[1000];
 	sprintf(key_path, "/home/%s/.ssh/id_rsa", git_user[i]);
 	sprintf(pubkey_path, "/home/%s/.ssh/id_rsa.pub", git_user[i]);
 	error = git_cred_ssh_key_new(&my_cred, "git", pubkey_path, key_path, "");
@@ -289,7 +365,7 @@ void operate_git_pull(int i) {
 		return;
 	}
 	printf("%s currently works on %s\n", repo_name[i], my_branch_name);
-	char remote_branch[255];
+	char remote_branch[1000];
 	sprintf(remote_branch, "origin/%s", fetch_branch[i]);
 	error = git_branch_lookup(&myref, repo, remote_branch, GIT_BRANCH_REMOTE);
 	if (error < 0) {
@@ -301,7 +377,7 @@ void operate_git_pull(int i) {
 		printf("git_branch_lookup not found\n");
 	}
 	git_oid oid;
-	char remote_ref[255];
+	char remote_ref[1000];
 	sprintf(remote_ref, "refs/remotes/origin/%s", fetch_branch[i]);
 	error = git_reference_name_to_id(&oid, repo, "HEAD");
 	if (error < 0) {
@@ -334,9 +410,11 @@ void operate_git_pull(int i) {
 */
 	git_annotated_commit_free(myhead);
 	// 我也是别无他法 我也是醉了……
-	char cmd[1024];
+	char cmd[1000];
 	sprintf(cmd, "git merge %s", remote_branch);
 	system(cmd);
+	system(scr_after_pull[i]);
+	printf("Repository %s finished.\n", repo_name[i]);
 	sleep(10); // Long time sleep
 }
 
