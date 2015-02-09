@@ -8,5 +8,5 @@ echo "Architecture: $3" >> control
 echo "Depends: git" >> control
 echo "Installed-Size: " `expr \`du -b $1 | cut -f -1\` / 1024` >> control
 echo "Maintainer: Senorsen <sen@senorsen.com>" >> control
-echo "Description: GitLab auto pull service. Qiu Shi Chao Website. " >> control
+echo "Description: GitLab and GitHub Webhook auto pull service. Qiu Shi Chao Website. " >> control
 

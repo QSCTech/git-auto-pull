@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "Summary: GitLab Webhook auto pull service. Qiu Shi Chao Website. " > git-auto-pull.spec
+echo "Summary: GitLab and GitHub Webhook auto pull service. Qiu Shi Chao Website. " > git-auto-pull.spec
 echo "Name: git-auto-pull" >> git-auto-pull.spec
 echo "Version: $1" >> git-auto-pull.spec
 echo "Release: 1" >> git-auto-pull.spec
@@ -13,7 +13,7 @@ echo "BuildRoot:  %{_builddir}/%{name}-root" >> git-auto-pull.spec
 echo "Source: %{name}-%{version}.tar.gz" >> git-auto-pull.spec
 echo "" >> git-auto-pull.spec
 echo "%description" >> git-auto-pull.spec
-echo "GitLab Webhook auto pull service. Qiu Shi Chao Website. " >> git-auto-pull.spec
+echo "GitLab and GitHub Webhook auto pull service. Qiu Shi Chao Website. " >> git-auto-pull.spec
 echo "" >> git-auto-pull.spec
 echo "%prep" >> git-auto-pull.spec
 echo "%setup -q" >> git-auto-pull.spec
@@ -64,6 +64,8 @@ echo "systemctl restart git-auto-pull || true" >> git-auto-pull.spec
 echo "cp /usr/share/git-auto-pull/qsc.repo /etc/yum.repos.d/qsc.repo || true" >> git-auto-pull.spec
 echo "" >> git-auto-pull.spec
 echo "%changelog" >> git-auto-pull.spec
-echo "* Fri Feb 06 2015 Senoren <sen@senorsen.com> - 0.1.9" >> git-auto-pull.spec
+echo "* Mon Feb 09 2015 Senorsen <sen@senorsen.com> - 0.4.54" >> git-auto-pull.spec
+echo "- Add support for GitHub push webhook" >> git-auto-pull.spec
+echo "* Fri Feb 06 2015 Senorsen <sen@senorsen.com> - 0.1.9" >> git-auto-pull.spec
 echo "- Initial version of the package" >> git-auto-pull.spec
 

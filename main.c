@@ -136,7 +136,6 @@ void bind_port() {
 }
 
 void parse_post_obj(char * str) {
-	printf("%s\n", str);
 	json_object * jobj = json_tokener_parse(str);
 	enum json_type type = json_object_get_type(jobj);
 
@@ -145,6 +144,7 @@ void parse_post_obj(char * str) {
 	char *buf;
 	size_t bufsize;
 	int s;
+	char * whtype = "GitLab";
 
 	if (type == json_type_object) {
 		// Correct #1
@@ -157,6 +157,13 @@ void parse_post_obj(char * str) {
 		json_object * user_name;
 		json_object_object_get_ex(jobj, "user_name", &user_name);
 		enum json_type user_name_type = json_object_get_type(user_name);
+		if (user_name_type != json_type_string) {
+			// GitHub Webhook compatible
+			whtype = "GitHub";
+			json_object * jpusher = json_object_object_get_ex(jobj, "pusher", &jpusher);
+			json_object_object_get_ex(jpusher, "name", &user_name);
+			user_name_type = json_object_get_type(user_name);
+		}
 		if (ref_type != json_type_string || repository_type != json_type_object || user_name_type != json_type_string) return;
 		json_object * rep_name;
 		json_object_object_get_ex(repository, "name", &rep_name);
@@ -164,13 +171,17 @@ void parse_post_obj(char * str) {
 		json_object_object_get_ex(repository, "url", &rep_url);
 		enum json_type rep_name_type = json_object_get_type(rep_name);
 		enum json_type rep_url_type = json_object_get_type(rep_url);
+		if (rep_url_type != json_type_string) {
+			// GitHub Webhook compatible
+			json_object_object_get_ex(repository, "ssh_url", &rep_url);
+			rep_url_type = json_object_get_type(rep_url);
+		}
 		if (rep_name_type != json_type_string || rep_url_type != json_type_string) return;
 		const char * sz_ref = json_object_get_string(ref);
-		const char * sz_repository = json_object_get_string(repository);
 		const char * sz_rep_url = json_object_get_string(rep_url);
 		const char * sz_rep_name = json_object_get_string(rep_name);
 		const char * sz_user_name = json_object_get_string(user_name);
-		printf("[GitLab] %s (%s) by %s\n", sz_rep_name, sz_rep_url, sz_user_name);
+		printf("[%s] %s (%s) by %s\n", whtype, sz_rep_name, sz_rep_url, sz_user_name);
 		int i;
 		for (i = 0; i < repo_cnt; i++) {
 			if (strcmp(repo_name[i], sz_rep_name) == 0 && strcmp(match_ref[i], sz_ref) == 0 && strcmp(git_url[i], sz_rep_url) == 0) {
@@ -417,7 +428,6 @@ int main(int argc, char * argv[]) {
 						strcat(org, in);
 					}
 				}
-				printf("%s\n", org);
 				strcpy(code, "200 OK");
 				if (!find) {
 					printf("Requet body not found.\n");
