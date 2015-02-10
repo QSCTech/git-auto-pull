@@ -1,10 +1,15 @@
-VERSION=0.4.62
+VERSION=0.4.63
+CFLAGS=
 
 all: static64 static32
 
+debug:
+	mkdir -p tmp
+	gcc -static main.c -D VERSION=\"$(VERSION)\" -g $(CFLAGS) -Wl,--as-needed -Wa,--noexecstack -I ./tmp/http-parser-bin64/ -L ./tmp/http-parser-bin64/ -I ./tmp/libssh2-bin64/include -L ./tmp/libgit2-bin64 -L ./tmp/json-c-bin64/lib -I ./tmp/libgcrypt-bin64/include -I ./tmp/libgit2/include -I ./tmp/json-c-bin64/include tmp/libssh2-bin64/lib/libssh2.a tmp/http-parser-bin64/libhttp_parser.a tmp/libgit2-bin64/libgit2.a tmp/json-c-bin64/lib/libjson-c.a -o tmp/git-auto-pull-static_amd64 -L ./tmp/libssh2-bin64/lib -lssh2 -L ./tmp/libgcrypt-bin64/lib -l gcrypt -L ./tmp/libgpg-error-bin64/lib -l gpg-error -I ./tmp/openssl-bin64/include -L ./tmp/zlib-bin64/lib -lz -L ./tmp/openssl-bin64/lib -lssl -lcrypto ./tmp/openssl-bin64/lib/libssl.a ./tmp/openssl-bin64/lib/libcrypto.a -L /usr/lib/z86_64-linux-gnu/ -lrt -ldl -m64
+
 static64:
 	mkdir -p tmp
-	gcc -static main.c -D VERSION=\"$(VERSION)\" -Wl,--as-needed -Wa,--noexecstack -I ./tmp/http-parser-bin64/ -L ./tmp/http-parser-bin64/ -I ./tmp/libssh2-bin64/include -L ./tmp/libgit2-bin64 -L ./tmp/json-c-bin64/lib -I ./tmp/libgcrypt-bin64/include -I ./tmp/libgit2/include -I ./tmp/json-c-bin64/include tmp/libssh2-bin64/lib/libssh2.a tmp/http-parser-bin64/libhttp_parser.a tmp/libgit2-bin64/libgit2.a tmp/json-c-bin64/lib/libjson-c.a -o tmp/git-auto-pull-static_amd64 -L ./tmp/libssh2-bin64/lib -lssh2 -L ./tmp/libgcrypt-bin64/lib -l gcrypt -L ./tmp/libgpg-error-bin64/lib -l gpg-error -I ./tmp/openssl-bin64/include -L ./tmp/zlib-bin64/lib -lz -L ./tmp/openssl-bin64/lib -lssl -lcrypto ./tmp/openssl-bin64/lib/libssl.a ./tmp/openssl-bin64/lib/libcrypto.a -L /usr/lib/z86_64-linux-gnu/ -lrt -ldl -m64
+	gcc -static main.c -D VERSION=\"$(VERSION)\" $(CFLAGS) -Wl,--as-needed -Wa,--noexecstack -I ./tmp/http-parser-bin64/ -L ./tmp/http-parser-bin64/ -I ./tmp/libssh2-bin64/include -L ./tmp/libgit2-bin64 -L ./tmp/json-c-bin64/lib -I ./tmp/libgcrypt-bin64/include -I ./tmp/libgit2/include -I ./tmp/json-c-bin64/include tmp/libssh2-bin64/lib/libssh2.a tmp/http-parser-bin64/libhttp_parser.a tmp/libgit2-bin64/libgit2.a tmp/json-c-bin64/lib/libjson-c.a -o tmp/git-auto-pull-static_amd64 -L ./tmp/libssh2-bin64/lib -lssh2 -L ./tmp/libgcrypt-bin64/lib -l gcrypt -L ./tmp/libgpg-error-bin64/lib -l gpg-error -I ./tmp/openssl-bin64/include -L ./tmp/zlib-bin64/lib -lz -L ./tmp/openssl-bin64/lib -lssl -lcrypto ./tmp/openssl-bin64/lib/libssl.a ./tmp/openssl-bin64/lib/libcrypto.a -L /usr/lib/z86_64-linux-gnu/ -lrt -ldl -m64
 
 static32:
 	mkdir -p tmp

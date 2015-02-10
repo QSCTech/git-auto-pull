@@ -139,8 +139,7 @@ int read_conf() {
 	}
 	for (i = 0; i < arr_len; i++) {
 		json_object * j_repoa = json_object_array_get_idx(j_repo, i);
-		json_object * j_ref, * j_repo_name, * j_url, * j_branch, * j_path, * j_user, * j_after_pull;
-		json_object_object_get_ex(j_repoa, "ref", &j_ref);
+		json_object * j_repo_name, * j_url, * j_branch, * j_path, * j_user, * j_after_pull;
 		json_object_object_get_ex(j_repoa, "repo_name", &j_repo_name);
 		json_object_object_get_ex(j_repoa, "url", &j_url);
 		json_object_object_get_ex(j_repoa, "branch", &j_branch);
@@ -157,7 +156,7 @@ int read_conf() {
 			return 1;
 		}
 		match_ref[i] = (const char *) malloc(1024);
-		sprintf((char *) match_ref[i], "refs/heads/%s", match_ref[i]);
+		sprintf((char *) match_ref[i], "refs/heads/%s", fetch_branch[i]);
 		if (json_object_get_type(j_url) != json_type_string) {
 			printerr("field url should be a valid string");
 			return 1;
