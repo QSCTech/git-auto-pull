@@ -191,8 +191,9 @@ int read_conf() {
 				printerr("field user should be a valid string");
 				return 1;
 			}
+		} else {
+			git_user[i] = json_object_get_string(j_user);
 		}
-		git_user[i] = json_object_get_string(j_user);
 		if (strlen(git_user[i]) > 64) {
 			printerr("field user: string length exceeded, max length is 64");
 			return 1;

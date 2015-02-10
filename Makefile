@@ -1,4 +1,4 @@
-VERSION=0.4.63
+VERSION=0.4.64
 CFLAGS=
 
 all: static64 static32
