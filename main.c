@@ -276,7 +276,8 @@ void parse_post_obj(char * str, char * realip) {
 		if (user_name_type != json_type_string) {
 			// GitHub Webhook compatible
 			whtype = "GitHub";
-			json_object * jpusher = json_object_object_get_ex(jobj, "pusher", &jpusher);
+			json_object * jpusher;
+			json_object_object_get_ex(jobj, "pusher", &jpusher);
 			json_object_object_get_ex(jpusher, "name", &user_name);
 			user_name_type = json_object_get_type(user_name);
 		}
