@@ -1,9 +1,10 @@
 #!/bin/sh
 
-BINFILE=$3
+BINFILE=$4
 VERSION=$1
-ARCH=$2
-FULLDIR="git-auto-pull-$VERSION-1.$ARCH"
+RELEASE=$2
+ARCH=$3
+FULLDIR="git-auto-pull-$VERSION-$2.$ARCH"
 SEMIDIR="git-auto-pull-$VERSION"
 mkdir -p packages/rpm
 rm -rf packages/rpm/$SEMIDIR

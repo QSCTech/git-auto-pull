@@ -3,10 +3,31 @@
 
 mkdir -p tmp
 
-git clone https://github.com/json-c/json-c.git tmp/json-c 2>&1 >/dev/null || true
-git clone https://github.com/libgit2/libgit2.git tmp/libgit2 2>&1 >/dev/null || true
-git clone git://git.libssh2.org/libssh2.git tmp/libssh2 2>&1 >/dev/null || true
-git clone https://github.com/joyent/http-parser.git tmp/http-parser || true
+{
+	git clone https://github.com/json-c/json-c.git tmp/json-c
+	cd tmp/json-c
+	git checkout ec4879ac5b502ae81f6b73450b960ede11ad2560
+	cd ../..
+} || true
+{
+	git clone -n https://github.com/libgit2/libgit2.git tmp/libgit2
+	cd tmp/libgit2
+	# Compatitable with CentOS 6
+	git checkout v0.20.0
+	cd ../..
+} || true
+{
+	git clone git://git.libssh2.org/libssh2.git tmp/libssh2
+	cd tmp/libssh2
+	git checkout a8473c819bc068c4be087b6053efcdc92f3c6ba2
+	cd ../..
+} || true
+{
+	git clone https://github.com/joyent/http-parser.git tmp/http-parser
+	cd tmp/http-parser
+	git checkout 53063b780be8bff84895006409ae390ca96be1cf
+	cd ../..
+} || true
 [ -f tmp/libgcrypt-1.6.2.tar.bz2 ] || wget ftp://ftp.gnupg.org/gcrypt/libgcrypt/libgcrypt-1.6.2.tar.bz2 -O tmp/libgcrypt-1.6.2.tar.bz2
 [ -d tmp/libgcrypt-1.6.2 ] || [ -d tmp/libgcrypt ] || (cd tmp; rm -rf libgcrypt libgcrypt-1.6.2; tar xavf libgcrypt-1.6.2.tar.bz2; mv libgcrypt-1.6.2 libgcrypt; cd ..)
 [ -f tmp/libgpg-error-1.17.tar.bz2 ] || wget ftp://ftp.gnupg.org/gcrypt/libgpg-error/libgpg-error-1.17.tar.bz2 -O tmp/libgpg-error-1.17.tar.bz2

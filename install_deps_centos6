@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "You should use this on a CentOS 6 (x86_64). "
+sudo yum install make gcc glibc-devel glibc-devel.i686 openssl-devel.x86_64 openssl-devel.i686 libgcrypt-devel.x86_64 libgcrypt-devel.i686 libgcrypt.x86_64 libgcrypt.i686 libssh2-devel.x86_64 libssh2-devel.i686 libssh2.x86_64 libssh2.i686 libgit2-devel.x86_64 libgit2-devel.i686 libgit2.x86_64 libgit2.i686 json-c-devel.x86_64 json-c-devel.i686 json-c.x86_64 json-c.i686
+
