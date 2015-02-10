@@ -437,6 +437,8 @@ int main(int argc, char * argv[]) {
 	// Then set up daemon
 	freopen(LOG_PATH, "a", stdout);
 	freopen(LOG_ERR_PATH, "a", stderr);
+	setbuf(stdout, NULL);
+	setbuf(stderr, NULL);
 	printf("%s: Version %s\n", argv[0], VERSION);
 	if (read_conf()) {
 		printf("Start error: cannot read config\n");
