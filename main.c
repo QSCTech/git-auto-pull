@@ -288,7 +288,7 @@ void parse_post_obj(char * str, char * realip) {
 		json_object_object_get_ex(repository, "url", &rep_url);
 		enum json_type rep_name_type = json_object_get_type(rep_name);
 		enum json_type rep_url_type = json_object_get_type(rep_url);
-		if (rep_url_type != json_type_string) {
+		if (strcmp(whtype, "GitHub") == 0 || rep_url_type != json_type_string) {
 			// GitHub Webhook compatible
 			json_object_object_get_ex(repository, "ssh_url", &rep_url);
 			rep_url_type = json_object_get_type(rep_url);
