@@ -301,7 +301,7 @@ void parse_post_obj(char * str, char * realip) {
 		printf("[%s] %s (%s) by %s\n", whtype, sz_rep_name, sz_rep_url, sz_user_name);
 		int i;
 		for (i = 0; i < repo_cnt; i++) {
-			if (strcmp(repo_name[i], sz_rep_name) == 0 && strcmp(match_ref[i], sz_ref) == 0 && strcmp(git_url[i], sz_rep_url) == 0) {
+			if (strcmp(repo_name[i], sz_rep_name) == 0 && strcmp(match_ref[i], sz_ref) == 0) {
 				// That's it
 				printf("[Auto Pull] IP: %s, ID: %d, Url: %s\n", realip, i, git_url[i]);
 				//char cmd[1024];
