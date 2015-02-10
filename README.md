@@ -1,8 +1,8 @@
-#git-auto-pull
+# git-auto-pull
 
 A tool to handle GitLab and GitHub's Push event Webhook.
 
-##Usage
+## Usage
 
 1. Install from http://dl.zjuqsc.com/linux/
 2. Set /etc/git-auto-pull/config.json
@@ -14,10 +14,10 @@ A tool to handle GitLab and GitHub's Push event Webhook.
 	service git-auto-pull
     
 
-##Special
+## Special
 This software is now at a very early and unstable version. 
 
 Use it AT YOUR OWN RISK. 
 
-##License
+## License
 GPLv3
