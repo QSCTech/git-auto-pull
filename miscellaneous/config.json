@@ -1,12 +1,15 @@
 {
+	"default_user": "website",
+	"proxy": ["192.168.73.46"],
+	"proxy_header": "X-Real-IP",
 	"repo": [
 		{
-			"ref": "refs/heads/deploy",
-			"repo_name": "NewTide",
-			"url": "git@git.zjuqsc.com:fnlCtrl/newtide.git",
+			"repo_name": "qsc-mobile-api-2-5",
+			"url": "git@git.zjuqsc.com:qsc-mobile/qsc-mobile-api-2-5.git",
 			"branch": "deploy",
-			"path": "/home/fnlctrl/newtide",
-			"user": "fnlctrl"
+			"path": "/home/website/qsc-mobile-api-2-5",
+			"user": "website",
+			"after_pull": "echo hi"
 		}
 	]
 }

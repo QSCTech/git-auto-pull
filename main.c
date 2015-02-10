@@ -42,6 +42,10 @@ struct sockaddr_in their_addr;
 socklen_t sin_size;
 struct sigaction sa;
 
+const char * proxy_header;
+const char * proxies[100];
+int proxy_cnt;
+
 // GitLab Repositories stuff
 const char * fetch_branch[1000];
 const char * match_ref[1000];
@@ -73,6 +77,7 @@ void printerr(const char * format, ...) {
 
 int read_conf() {
 	char conf_str[10240];
+	int i ,arr_len;
 	FILE * fp = fopen(CONF_PATH, "r");
 	if (fp == NULL) {
 		return 1;
@@ -83,12 +88,50 @@ int read_conf() {
 	if (type != json_type_object) {
 		return 1;
 	}
+	const char * default_user = NULL;
+	json_object * j_default_user;
+	json_object_object_get_ex(jobj, "default_user", &j_default_user);
+	if (json_object_get_type(j_default_user) == json_type_string) {
+		default_user = json_object_get_string(j_default_user);
+	}
+	json_object * j_proxies;
+	json_object_object_get_ex(jobj, "proxy", &j_proxies);
+	if (json_object_get_type(j_proxies) == json_type_array) {
+		arr_len = json_object_array_length(j_proxies);
+		proxy_cnt = arr_len;
+		for (i = 0; i < arr_len; i++) {
+			json_object * j_proxy = json_object_array_get_idx(j_proxies, i);
+			if (json_object_get_type(j_proxy) == json_type_string) {
+				proxies[i] = json_object_get_string(j_proxy);
+			} else {
+				printerr("wrong syntax, there should be strings in proxy array");
+				return 1;
+			}
+		}
+	} else if (json_object_get_type(j_proxies) == json_type_string) {
+		proxy_cnt = 1;
+		proxies[0] = json_object_get_string(j_proxies);
+	} else if (json_object_get_type(j_proxies) != json_type_null) {
+		printerr("proxy type error, should be string or array of strings");
+		return 1;
+	}
+	json_object * j_proxy_header;
+	json_object_object_get_ex(jobj, "proxy_header", &j_proxy_header);
+	proxy_header = "X-Real-IP";
+	if (json_object_get_type(j_proxy_header) == json_type_string) {
+		proxy_header = json_object_get_string(j_proxy_header);
+	} else if (json_object_get_type(j_proxy_header) == json_type_null) {
+		proxy_header = "X-Real-IP";
+	} else {
+		printerr("proxy_header should be string or null");
+		return 1;
+	}
 	json_object * j_repo;
 	json_object_object_get_ex(jobj, "repo", &j_repo);
 	if (json_object_get_type(j_repo) != json_type_array) {
 		return 1;
 	}
-	int i, arr_len = json_object_array_length(j_repo);
+	arr_len = json_object_array_length(j_repo);
 	repo_cnt = arr_len;
 	if (repo_cnt > 1000) {
 		printerr("too many repos! I can only handle 1000.");
@@ -113,6 +156,8 @@ int read_conf() {
 			printerr("field branch: string length exceeded, max length is 255");
 			return 1;
 		}
+		match_ref[i] = (const char *) malloc(1024);
+		sprintf((char *) match_ref[i], "refs/heads/%s", match_ref[i]);
 		if (json_object_get_type(j_url) != json_type_string) {
 			printerr("field url should be a valid string");
 			return 1;
@@ -120,15 +165,6 @@ int read_conf() {
 		git_url[i] = json_object_get_string(j_url);
 		if (strlen(git_url[i]) > 255) {
 			printerr("field url: string length exceeded, max length is 255");
-			return 1;
-		}
-		if (json_object_get_type(j_ref) != json_type_string) {
-			printerr("field ref should be a valid string");
-			return 1;
-		}
-		match_ref[i] = json_object_get_string(j_ref);
-		if (strlen(match_ref[i]) > 255) {
-			printerr("field ref: string length exceeded, max length is 255");
 			return 1;
 		}
 		if (json_object_get_type(j_repo_name) != json_type_string) {
@@ -150,8 +186,12 @@ int read_conf() {
 			return 1;
 		}
 		if (json_object_get_type(j_user) != json_type_string) {
-			printerr("field user should be a valid string");
-			return 1;
+			if (default_user != NULL) {
+				git_user[i] = default_user;
+			} else {
+				printerr("field user should be a valid string");
+				return 1;
+			}
 		}
 		git_user[i] = json_object_get_string(j_user);
 		if (strlen(git_user[i]) > 64) {
@@ -211,7 +251,7 @@ void bind_port() {
 	}
 }
 
-void parse_post_obj(char * str) {
+void parse_post_obj(char * str, char * realip) {
 	json_object * jobj = json_tokener_parse(str);
 	enum json_type type = json_object_get_type(jobj);
 
@@ -262,7 +302,7 @@ void parse_post_obj(char * str) {
 		for (i = 0; i < repo_cnt; i++) {
 			if (strcmp(repo_name[i], sz_rep_name) == 0 && strcmp(match_ref[i], sz_ref) == 0 && strcmp(git_url[i], sz_rep_url) == 0) {
 				// That's it
-				printf("[Auto Pull] ID: %d, Url: %s\n", i, git_url[i]);
+				printf("[Auto Pull] IP: %s, ID: %d, Url: %s\n", realip, i, git_url[i]);
 				//char cmd[1024];
 				//sprintf(cmd, "cd \"%s\"; sudo -u %s -H git --work-tree=\"%s\" --git-dir=\"%s/.git\" pull origin %s --force", repo_path[i], git_user[i], repo_path[i], repo_path[i], fetch_branch[i]);
 				//system(cmd);
@@ -422,11 +462,11 @@ void operate_git_pull(int i) {
 }
 
 int main(int argc, char * argv[]) {
-	char in[15000],  sent[500], code[50], file[200], mime[100], moved[200], length[100], auth[200], auth_dir[500], start[100], end[100];
-	char *result=NULL, *hostname, *hostnamef, *lines, *ext=NULL, *extf, *auth_dirf=NULL, *authf=NULL, *rangetmp;
+	char in[25000],  sent[500], code[50], file[200], mime[100], moved[200], length[100], auth[200], auth_dir[500], start[100], end[100];
+	char *result=NULL, *hostname, *hostnamef, *lines, *ext=NULL, *extf, *auth_dirf=NULL, *authf=NULL, *rangetmp, *header, *headerval, *headerline, *realip;
 	int buffer_length;
-	char buffer[15000], charset[30], client_addr[32];
-	char post_content[15000], org[15000], *po;
+	char buffer[25000], headers[25000], charset[30], client_addr[32];
+	char post_content[25000], org[25000], *po;
 	long filesize, range=0, peername, i;
 
 	if (geteuid() != 0) {
@@ -468,25 +508,44 @@ int main(int argc, char * argv[]) {
 		setsockopt(new_fd, SOL_SOCKET, SO_RCVTIMEO, (char *) &tv, sizeof(struct timeval));
 
 		strcpy(client_addr, inet_ntoa(their_addr.sin_addr));
+		realip = client_addr;
 		if (!fork()) {
 			close(sockfd);
 			int find = 0;
-			if (read(new_fd, in, 5000) == -1) {
+			if (read(new_fd, in, 8000) == -1) {
 				perror("receive");
 			} else {
+				strcpy(headers, in);
 				strcpy(org, in);
 				lines = strtok(in, "\n");
-				do {
-					hostname = strtok(NULL, "\n");
-				} while (hostname[0] != 'H' || hostname[1] != 'o' || hostname[2] != 's' || hostname[3] != 't');
-				hostnamef = strtok(hostname, " ");
-				hostnamef = strtok(NULL, " ");
 				result = strtok(lines, " ");
 				result = strtok(NULL, " ");
+				// Read proxy_header
+				char * tokr1, * tokr2;
+				headerline = strtok_r(headers, "\n", &tokr1);
+				do {
+					header = strtok_r(headerline, ":", &tokr2);
+					headerval = strtok_r(NULL, ":", &tokr2);
+					if (headerval != NULL) {
+						if (headerval[strlen(headerval) - 1] == '\r') {
+							headerval[strlen(headerval) - 1] = 0;
+						}
+						if (headerval[0] == ' ') headerval++;
+					}
+					if (headerval != NULL && strcmp(header, proxy_header) == 0) {
+						for (i = 0; i < proxy_cnt; i++) {
+							if (strcmp(client_addr, proxies[i]) == 0) {
+								realip = strdup(headerval);
+								break;
+							}
+						}
+					}
+					headerline = strtok_r(NULL, "\n", &tokr1);
+				} while (headerline != NULL);
 				char tmpstr[3000];
 				int len;
 				strcpy(file, result);
-				printf("[Request] %s %s\n", client_addr, file);
+				printf("[Request] %s %s\n", realip, file);
 				int try = 3;
 				while (!find && --try) {
 					if (org[0] == 'G') {
@@ -507,7 +566,7 @@ int main(int argc, char * argv[]) {
 					if (find) {
 						break;
 					} else {
-						read(new_fd, in, 5000);
+						read(new_fd, in, 8000);
 						strcat(org, in);
 					}
 				}
@@ -518,7 +577,7 @@ int main(int argc, char * argv[]) {
 				} else {
 					printf("Request body found.\n");
 					sprintf(buffer, "{\"err\":0,\"server\":\"Senorsen's git-a  uto-pull\",\"version\":\"%s\",\"hint\":\"Processing\"}", VERSION);
-					po = (char *) malloc(sizeof(char) * 3000);
+					po = (char *) malloc(sizeof(char) * 8000);
 					int pos = i, j = 0;
 					for (i = pos + find; i <= len; i++) {
 						po[j++] = org[i];
@@ -542,7 +601,7 @@ int main(int argc, char * argv[]) {
 			write(new_fd, sent, strlen(sent));
 			write(new_fd, buffer, 1024);
 			if (find) {
-				parse_post_obj(po);
+				parse_post_obj(po, realip);
 			}
 			sleep(1);	// Wait for 1s in case of ECONNRESET
 			close(new_fd);
