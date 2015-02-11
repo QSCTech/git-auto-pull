@@ -1,49 +1,61 @@
 #!/bin/sh
 # Requirement: sudo apt-get install gcc-multilib g++-multilib libtool autoconf automake libssh-dev libssh-dev:i386 # and etc...
 
-mkdir -p tmp
+if [ -n "$1" ]; then
+	LIBDIR=$1
+fi
+
+if [ -z "$LIBDIR" ]; then
+	LIBDIR=tmp
+	echo "Use default path: $LIBDIR"
+else
+	echo "Use specified path: $LIBDIR"
+fi
+
+PWDA=$PWD
+LIBDIR=`readlink -f "$LIBDIR"`
+mkdir -p $LIBDIR
 
 {
-	git clone https://github.com/json-c/json-c.git tmp/json-c
-	cd tmp/json-c
+	git clone https://github.com/json-c/json-c.git $LIBDIR/json-c
+	cd $LIBDIR/json-c
 	git checkout ec4879ac5b502ae81f6b73450b960ede11ad2560
-	cd ../..
+	cd $PWDA
 } || true
 {
-	git clone -n https://github.com/libgit2/libgit2.git tmp/libgit2
-	cd tmp/libgit2
+	git clone -n https://github.com/libgit2/libgit2.git $LIBDIR/libgit2
+	cd $LIBDIR/libgit2
 	# Compatitable with CentOS 6
-	git checkout v0.20.0
-	cd ../..
+	git checkout b703049c6189fec223896999b9cf5d78efcb08d7
+	cd $PWDA
 } || true
 {
-	git clone git://git.libssh2.org/libssh2.git tmp/libssh2
-	cd tmp/libssh2
+	git clone git://git.libssh2.org/libssh2.git $LIBDIR/libssh2
+	cd $LIBDIR/libssh2
 	git checkout a8473c819bc068c4be087b6053efcdc92f3c6ba2
-	cd ../..
+	cd $PWDA
 } || true
 {
-	git clone https://github.com/joyent/http-parser.git tmp/http-parser
-	cd tmp/http-parser
+	git clone https://github.com/joyent/http-parser.git $LIBDIR/http-parser
+	cd $LIBDIR/http-parser
 	git checkout 53063b780be8bff84895006409ae390ca96be1cf
-	cd ../..
+	cd $PWDA
 } || true
-[ -f tmp/libgcrypt-1.6.2.tar.bz2 ] || wget ftp://ftp.gnupg.org/gcrypt/libgcrypt/libgcrypt-1.6.2.tar.bz2 -O tmp/libgcrypt-1.6.2.tar.bz2
-[ -d tmp/libgcrypt-1.6.2 ] || [ -d tmp/libgcrypt ] || (cd tmp; rm -rf libgcrypt libgcrypt-1.6.2; tar xavf libgcrypt-1.6.2.tar.bz2; mv libgcrypt-1.6.2 libgcrypt; cd ..)
-[ -f tmp/libgpg-error-1.17.tar.bz2 ] || wget ftp://ftp.gnupg.org/gcrypt/libgpg-error/libgpg-error-1.17.tar.bz2 -O tmp/libgpg-error-1.17.tar.bz2
-[ -d tmp/libgpg-error-1.17 ] || [ -d tmp/libgpg-error ] || (cd tmp; rm -rf libgpg-error libgpg-error-1.17; tar xavf libgpg-error-1.17.tar.bz2; mv libgpg-error-1.17 libgpg-error; cd ..)
-[ -f tmp/zlib-1.2.8.tar.gz ] || wget http://zlib.net/zlib-1.2.8.tar.gz -O tmp/zlib-1.2.8.tar.gz
-[ -d tmp/zlib ] || (cd tmp; rm -rf zlib-1.2.8 zlib; tar xavf zlib-1.2.8.tar.gz; mv zlib-1.2.8 zlib; cd ..)
-[ -f tmp/openssl-1.0.2.tar.gz ] || wget https://www.openssl.org/source/openssl-1.0.2.tar.gz -O tmp/openssl-1.0.2.tar.gz
-[ -d tmp/openssl ] || (cd tmp; rm -rf openssl-1.0.2 openssl; tar xavf openssl-1.0.2.tar.gz; mv openssl-1.0.2 openssl; cd ..)
+[ -f $LIBDIR/libgcrypt-1.6.2.tar.bz2 ] || wget ftp://ftp.gnupg.org/gcrypt/libgcrypt/libgcrypt-1.6.2.tar.bz2 -O $LIBDIR/libgcrypt-1.6.2.tar.bz2
+[ -d $LIBDIR/libgcrypt-1.6.2 ] || [ -d $LIBDIR/libgcrypt ] || (cd $LIBDIR; rm -rf libgcrypt libgcrypt-1.6.2; tar xavf libgcrypt-1.6.2.tar.bz2; mv libgcrypt-1.6.2 libgcrypt; cd $PWDA)
+[ -f $LIBDIR/libgpg-error-1.17.tar.bz2 ] || wget ftp://ftp.gnupg.org/gcrypt/libgpg-error/libgpg-error-1.17.tar.bz2 -O $LIBDIR/libgpg-error-1.17.tar.bz2
+[ -d $LIBDIR/libgpg-error-1.17 ] || [ -d $LIBDIR/libgpg-error ] || (cd $LIBDIR; rm -rf libgpg-error libgpg-error-1.17; tar xavf libgpg-error-1.17.tar.bz2; mv libgpg-error-1.17 libgpg-error; cd $PWDA)
+[ -f $LIBDIR/zlib-1.2.8.tar.gz ] || wget http://zlib.net/zlib-1.2.8.tar.gz -O $LIBDIR/zlib-1.2.8.tar.gz
+[ -d $LIBDIR/zlib ] || (cd $LIBDIR; rm -rf zlib-1.2.8 zlib; tar xavf zlib-1.2.8.tar.gz; mv zlib-1.2.8 zlib; cd $PWDA)
+[ -f $LIBDIR/openssl-1.0.2.tar.gz ] || wget https://www.openssl.org/source/openssl-1.0.2.tar.gz -O $LIBDIR/openssl-1.0.2.tar.gz
+[ -d $LIBDIR/openssl ] || (cd $LIBDIR; rm -rf openssl-1.0.2 openssl; tar xavf openssl-1.0.2.tar.gz; mv openssl-1.0.2 openssl; cd $PWDA)
 
-PWDA=`pwd`
 echo $PWDA
 
 do_compile0() {
-	PATH00=$PWDA/tmp/$THINGS
-	PATH32=$PWDA/tmp/$THINGS-bin32
-	PATH64=$PWDA/tmp/$THINGS-bin64
+	PATH00=$LIBDIR/$THINGS
+	PATH32=$LIBDIR/$THINGS-bin32
+	PATH64=$LIBDIR/$THINGS-bin64
 	if [ -d $PATH32 ]; then
 		if [ -d $PATH64 ]; then
 			return
@@ -88,16 +100,16 @@ PARA32=" --enable-static "
 PARA64=" --enable-static "
 THINGS=libgpg-error
 do_compile0
-PARA32=" --with-gpg-error-prefix=$PWDA/tmp/$THINGS-bin32 --disable-asm --enable-static "
-PARA64=" --with-gpg-error-prefix=$PWDA/tmp/$THINGS-bin64 --disable-asm --enable-static "
+PARA32=" --with-gpg-error-prefix=$LIBDIR/$THINGS-bin32 --disable-asm --enable-static "
+PARA64=" --with-gpg-error-prefix=$LIBDIR/$THINGS-bin64 --disable-asm --enable-static "
 THINGS=libgcrypt
 do_compile0
 
 THINGS=json-c
 
 do_compile1() {
-	PATH32=$PWDA/tmp/$THINGS-bin32
-	PATH64=$PWDA/tmp/$THINGS-bin64
+	PATH32=$LIBDIR/$THINGS-bin32
+	PATH64=$LIBDIR/$THINGS-bin64
 	if [ -d $PATH32 ]; then
 		if [ -d $PATH64 ]; then
 			return
@@ -107,7 +119,7 @@ do_compile1() {
 	rm -rf $PATH64
 	mkdir -p $PATH32
 	mkdir -p $PATH64
-	cd tmp/$THINGS
+	cd $LIBDIR/$THINGS
 	make clean || true
 	sh autogen.sh
 	CFLAGS=-m32 ./configure --prefix=$PATH32 && make && make install
@@ -121,8 +133,8 @@ do_compile1
 THINGS=libssh2
 
 do_compile2() {
-	PATH32=$PWDA/tmp/$THINGS-bin32
-	PATH64=$PWDA/tmp/$THINGS-bin64
+	PATH32=$LIBDIR/$THINGS-bin32
+	PATH64=$LIBDIR/$THINGS-bin64
 	if [ -d $PATH32 ]; then
 		if [ -d $PATH64 ]; then
 			return
@@ -130,12 +142,12 @@ do_compile2() {
 	fi
 	rm -rf $PATH32
 	rm -rf $PATH64
-	cd tmp/$THINGS
+	cd $LIBDIR/$THINGS
 	make clean || true
 	./buildconf
-	CFLAGS="-m32" ./configure --prefix=$PATH32 --with-libgcrypt-prefix=$PWDA/tmp/libgcrypt-bin32 && make && make install
+	CFLAGS="-m32" ./configure --prefix=$PATH32 --with-libgcrypt-prefix=$LIBDIR/libgcrypt-bin32 && make && make install
 	make clean || true
-	CFLAGS="-m64" ./configure --prefix=$PATH64 --with-libgcrypt-prefix=$PWDA/tmp/libgcrypt-bin64 && make && make install
+	CFLAGS="-m64" ./configure --prefix=$PATH64 --with-libgcrypt-prefix=$LIBDIR/libgcrypt-bin64 && make && make install
 	cd $PWDA
 }
 
@@ -144,8 +156,8 @@ do_compile2
 THINGS=http-parser
 
 do_compile3() {
-	PATH32=$PWDA/tmp/$THINGS-bin32
-	PATH64=$PWDA/tmp/$THINGS-bin64
+	PATH32=$LIBDIR/$THINGS-bin32
+	PATH64=$LIBDIR/$THINGS-bin64
 	if [ -d $PATH32 ]; then
 		if [ -d $PATH64 ]; then
 			return
@@ -155,8 +167,8 @@ do_compile3() {
 	rm -rf $PATH64
 	mkdir -p $PATH32
 	mkdir -p $PATH64
-	cp -r $PWDA/tmp/$THINGS/* $PATH32/
-	cp -r $PWDA/tmp/$THINGS/* $PATH64/
+	cp -r $LIBDIR/$THINGS/* $PATH32/
+	cp -r $LIBDIR/$THINGS/* $PATH64/
 	cd $PATH32
 	make clean || true
 	export CFLAGS="-m32"
@@ -177,8 +189,8 @@ do_compile3
 THINGS=libgit2
 
 do_compile4() {
-	PATH32=$PWDA/tmp/$THINGS-bin32
-	PATH64=$PWDA/tmp/$THINGS-bin64
+	PATH32=$LIBDIR/$THINGS-bin32
+	PATH64=$LIBDIR/$THINGS-bin64
 	if [ -d $PATH32 ]; then
 		if [ -d $PATH64 ]; then
 			return
@@ -189,38 +201,38 @@ do_compile4() {
 	mkdir -p $PATH32
 	mkdir -p $PATH64
 	cd $PWDA
-	cp miscellaneous/senmod-ssh2.patch $PWDA/tmp
-	cp miscellaneous/sen2.patch $PWDA/tmp
-	TMPSTR_PWD="$PWDA/tmp/libssh2-bin32/include/"
+	cp miscellaneous/senmod-ssh2.patch $LIBDIR/
+	cp miscellaneous/sen2.patch $LIBDIR/
+	TMPSTR_PWD="$LIBDIR/libssh2-bin32/include/"
 	TMPSTR_PWD=$(echo $TMPSTR_PWD | sed 's|\\|\\\\|g' | sed 's|/|\\/|g')
 	sed -i "s/SEN_INCLUDE/$TMPSTR_PWD/g" $PWDA/tmp/senmod-ssh2.patch
-	TMPSTR_PWD="$PWDA/tmp/libssh2-bin32/lib/libssh2.so"
+	TMPSTR_PWD="$LIBDIR/libssh2-bin32/lib/libssh2.so"
 	TMPSTR_PWD=$(echo $TMPSTR_PWD | sed 's|\\|\\\\|g' | sed 's|/|\\/|g')
 	sed -i "s/SEN_LIB/$TMPSTR_PWD/g" $PWDA/tmp/senmod-ssh2.patch
-	cd $PWDA/tmp/$THINGS
+	cd $LIBDIR/$THINGS
 	git checkout CMakeLists.txt
-	patch -f < $PWDA/tmp/senmod-ssh2.patch
-	patch -f < $PWDA/tmp/sen2.patch
+	patch -f < $LIBDIR/senmod-ssh2.patch
+	patch -f < $LIBDIR/sen2.patch
 	cd $PATH32
-	cmake $PWDA/tmp/$THINGS -DCMAKE_SHARED_LINKER_FLAGS="-m32" -DCMAKE_C_FLAGS="-m32" -DCMAKE_FIND_ROOT_PATH="$PWDA/tmp/libssh2-bin32/" -DZLIB_LIBRARY="$PWDA/tmp/zlib-bin64/lib/libz.so" -DOPENSSL_SSL_LIBRARY="$PWDA/tmp/openssl-bin32/lib/libssl.so" -DOPENSSL_CRYPTO_LIBRARY="$PWDA/tmp/openssl-bin32/lib/libcrypto.so" -DCMAKE_LIBRARY_PATH="$PWDA/tmp/libssh2-bin32/lib/" -DBUILD_SHARED_LIBS="OFF" -DBUILD_CLAR="OFF" -DTHREADSAFE="OFF" -DCMAKE_INSTALL_PREFIX=$PATH32
+	cmake $LIBDIR/$THINGS -DCMAKE_SHARED_LINKER_FLAGS="-m32" -DCMAKE_C_FLAGS="-m32" -DCMAKE_FIND_ROOT_PATH="$LIBDIR/libssh2-bin32/" -DZLIB_LIBRARY="$LIBDIR/zlib-bin64/lib/libz.so" -DOPENSSL_SSL_LIBRARY="$LIBDIR/openssl-bin32/lib/libssl.so" -DOPENSSL_CRYPTO_LIBRARY="$LIBDIR/openssl-bin32/lib/libcrypto.so" -DCMAKE_LIBRARY_PATH="$LIBDIR/libssh2-bin32/lib/" -DBUILD_SHARED_LIBS="OFF" -DBUILD_CLAR="OFF" -DTHREADSAFE="OFF" -DCMAKE_INSTALL_PREFIX=$PATH32
 	cmake --build .
-	rm $PWDA/tmp/senmod-ssh2.patch
-	rm $PWDA/tmp/sen2.patch
+	rm $LIBDIR/senmod-ssh2.patch
+	rm $LIBDIR/sen2.patch
 	cd $PWDA
-	cp miscellaneous/senmod-ssh2.patch $PWDA/tmp
-	cp miscellaneous/sen2.patch $PWDA/tmp
-	TMPSTR_PWD="$PWDA/tmp/libssh2-bin64/include/"
+	cp miscellaneous/senmod-ssh2.patch $LIBDIR/
+	cp miscellaneous/sen2.patch $LIBDIR/
+	TMPSTR_PWD="$LIBDIR/libssh2-bin64/include/"
 	TMPSTR_PWD=$(echo $TMPSTR_PWD | sed 's|\\|\\\\|g' | sed 's|/|\\/|g')
 	sed -i "s/SEN_INCLUDE/$TMPSTR_PWD/g" $PWDA/tmp/senmod-ssh2.patch
-	TMPSTR_PWD="$PWDA/tmp/libssh2-bin64/lib/libssh2.so"
+	TMPSTR_PWD="$LIBDIR/libssh2-bin64/lib/libssh2.so"
 	TMPSTR_PWD=$(echo $TMPSTR_PWD | sed 's|\\|\\\\|g' | sed 's|/|\\/|g')
 	sed -i "s/SEN_LIB/$TMPSTR_PWD/g" $PWDA/tmp/senmod-ssh2.patch
-	cd $PWDA/tmp/$THINGS
+	cd $LIBDIR/$THINGS
 	git checkout CMakeLists.txt
-	patch -f < $PWDA/tmp/senmod-ssh2.patch
-	patch -f < $PWDA/tmp/sen2.patch
+	patch -f < $LIBDIR/senmod-ssh2.patch
+	patch -f < $LIBDIR/sen2.patch
 	cd $PATH64
-	cmake $PWDA/tmp/$THINGS -DCMAKE_SHARED_LINKER_FLAGS="-m64" -DCMAKE_C_FLAGS="-m64" -DCMAKE_FIND_ROOT_PATH="$PWDA/tmp/libssh2-bin64/" -DZLIB_LIBRARY="$PWDA/tmp/zlib-bin64/lib/libz.so" -DOPENSSL_SSL_LIBRARY="$PWDA/tmp/openssl-bin32/lib/libssl.so" -DOPENSSL_CRYPTO_LIBRARY="$PWDA/tmp/openssl-bin32/lib/libcrypto.so" -DCMAKE_LIBRARY_PATH="$PWDA/tmp/libssh2-bin64/lib/" -DBUILD_SHARED_LIBS="OFF" -DBUILD_CLAR="OFF" -DTHREADSAFE="OFF" -DCMAKE_INSTALL_PREFIX=$PATH64
+	cmake $LIBDIR/$THINGS -DCMAKE_SHARED_LINKER_FLAGS="-m64" -DCMAKE_C_FLAGS="-m64" -DCMAKE_FIND_ROOT_PATH="$LIBDIR/libssh2-bin64/" -DZLIB_LIBRARY="$LIBDIR/zlib-bin64/lib/libz.so" -DOPENSSL_SSL_LIBRARY="$LIBDIR/openssl-bin32/lib/libssl.so" -DOPENSSL_CRYPTO_LIBRARY="$LIBDIR/openssl-bin32/lib/libcrypto.so" -DCMAKE_LIBRARY_PATH="$LIBDIR/libssh2-bin64/lib/" -DBUILD_SHARED_LIBS="OFF" -DBUILD_CLAR="OFF" -DTHREADSAFE="OFF" -DCMAKE_INSTALL_PREFIX=$PATH64
 	cmake --build .
 	cd $PWDA
 }
