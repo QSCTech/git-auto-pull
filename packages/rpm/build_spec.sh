@@ -3,7 +3,7 @@
 echo "Summary: GitLab and GitHub Webhook auto pull service. Qiu Shi Chao Website. " > git-auto-pull.spec
 echo "Name: git-auto-pull" >> git-auto-pull.spec
 echo "Version: $1" >> git-auto-pull.spec
-echo "Release: 1" >> git-auto-pull.spec
+echo "Release: $2" >> git-auto-pull.spec
 echo "License: GPL" >> git-auto-pull.spec
 echo "Group: Development/Tools" >> git-auto-pull.spec
 echo "URL: https://blog.senorsen.com" >> git-auto-pull.spec

@@ -18,7 +18,7 @@ mkdir -p ~/rpmbuild/SOURCES
 cp ${SEMIDIR}.tar.gz ~/rpmbuild/SOURCES
 rm ${SEMDIR}.tar.gz
 cd ../../
-./packages/rpm/build_spec.sh $VERSION
+./packages/rpm/build_spec.sh $VERSION $RELEASE
 mkdir -p ~/rpmbuild/SPECS
 cp git-auto-pull.spec ~/rpmbuild/SPECS
 rm git-auto-pull.bin
