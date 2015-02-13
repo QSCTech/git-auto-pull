@@ -1,4 +1,10 @@
 #!/bin/sh
+#
+# Copyright (C) Senorsen (Zhang Sen) <sen@senorsen.com>
+#
+# This software is distributed under the terms of GPLv3 or later,
+# See `LICENSE' for more information. 
+#
 # Requirement: sudo apt-get install gcc-multilib g++-multilib libtool autoconf automake libssh-dev libssh-dev:i386 # and etc...
 
 if [ -n "$1" ]; then
@@ -201,36 +207,36 @@ do_compile4() {
 	mkdir -p $PATH32
 	mkdir -p $PATH64
 	cd $PWDA
-	cp miscellaneous/senmod-ssh2.patch $LIBDIR/
-	cp miscellaneous/sen2.patch $LIBDIR/
+	cp miscellaneous/patch_lib_1.patch $LIBDIR/
+	cp miscellaneous/patch_lib_2.patch $LIBDIR/
 	TMPSTR_PWD="$LIBDIR/libssh2-bin32/include/"
 	TMPSTR_PWD=$(echo $TMPSTR_PWD | sed 's|\\|\\\\|g' | sed 's|/|\\/|g')
-	sed -i "s/SEN_INCLUDE/$TMPSTR_PWD/g" $PWDA/tmp/senmod-ssh2.patch
+	sed -i "s/SEN_INCLUDE/$TMPSTR_PWD/g" $PWDA/tmp/patch_lib_1.patch
 	TMPSTR_PWD="$LIBDIR/libssh2-bin32/lib/libssh2.so"
 	TMPSTR_PWD=$(echo $TMPSTR_PWD | sed 's|\\|\\\\|g' | sed 's|/|\\/|g')
-	sed -i "s/SEN_LIB/$TMPSTR_PWD/g" $PWDA/tmp/senmod-ssh2.patch
+	sed -i "s/SEN_LIB/$TMPSTR_PWD/g" $PWDA/tmp/patch_lib_1.patch
 	cd $LIBDIR/$THINGS
 	git checkout CMakeLists.txt
-	patch -f < $LIBDIR/senmod-ssh2.patch
-	patch -f < $LIBDIR/sen2.patch
+	patch -f < $LIBDIR/patch_lib_1.patch
+	patch -f < $LIBDIR/patch_lib_2.patch
 	cd $PATH32
 	cmake $LIBDIR/$THINGS -DCMAKE_SHARED_LINKER_FLAGS="-m32" -DCMAKE_C_FLAGS="-m32" -DCMAKE_FIND_ROOT_PATH="$LIBDIR/libssh2-bin32/" -DZLIB_LIBRARY="$LIBDIR/zlib-bin64/lib/libz.so" -DOPENSSL_SSL_LIBRARY="$LIBDIR/openssl-bin32/lib/libssl.so" -DOPENSSL_CRYPTO_LIBRARY="$LIBDIR/openssl-bin32/lib/libcrypto.so" -DCMAKE_LIBRARY_PATH="$LIBDIR/libssh2-bin32/lib/" -DBUILD_SHARED_LIBS="OFF" -DBUILD_CLAR="OFF" -DTHREADSAFE="OFF" -DCMAKE_INSTALL_PREFIX=$PATH32
 	cmake --build .
-	rm $LIBDIR/senmod-ssh2.patch
-	rm $LIBDIR/sen2.patch
+	rm $LIBDIR/patch_lib_1.patch
+	rm $LIBDIR/patch_lib_2.patch
 	cd $PWDA
-	cp miscellaneous/senmod-ssh2.patch $LIBDIR/
-	cp miscellaneous/sen2.patch $LIBDIR/
+	cp miscellaneous/patch_lib_1.patch $LIBDIR/
+	cp miscellaneous/patch_lib_2.patch $LIBDIR/
 	TMPSTR_PWD="$LIBDIR/libssh2-bin64/include/"
 	TMPSTR_PWD=$(echo $TMPSTR_PWD | sed 's|\\|\\\\|g' | sed 's|/|\\/|g')
-	sed -i "s/SEN_INCLUDE/$TMPSTR_PWD/g" $PWDA/tmp/senmod-ssh2.patch
+	sed -i "s/SEN_INCLUDE/$TMPSTR_PWD/g" $PWDA/tmp/patch_lib_1.patch
 	TMPSTR_PWD="$LIBDIR/libssh2-bin64/lib/libssh2.so"
 	TMPSTR_PWD=$(echo $TMPSTR_PWD | sed 's|\\|\\\\|g' | sed 's|/|\\/|g')
-	sed -i "s/SEN_LIB/$TMPSTR_PWD/g" $PWDA/tmp/senmod-ssh2.patch
+	sed -i "s/SEN_LIB/$TMPSTR_PWD/g" $PWDA/tmp/patch_lib_1.patch
 	cd $LIBDIR/$THINGS
 	git checkout CMakeLists.txt
-	patch -f < $LIBDIR/senmod-ssh2.patch
-	patch -f < $LIBDIR/sen2.patch
+	patch -f < $LIBDIR/patch_lib_1.patch
+	patch -f < $LIBDIR/patch_lib_2.patch
 	cd $PATH64
 	cmake $LIBDIR/$THINGS -DCMAKE_SHARED_LINKER_FLAGS="-m64" -DCMAKE_C_FLAGS="-m64" -DCMAKE_FIND_ROOT_PATH="$LIBDIR/libssh2-bin64/" -DZLIB_LIBRARY="$LIBDIR/zlib-bin64/lib/libz.so" -DOPENSSL_SSL_LIBRARY="$LIBDIR/openssl-bin32/lib/libssl.so" -DOPENSSL_CRYPTO_LIBRARY="$LIBDIR/openssl-bin32/lib/libcrypto.so" -DCMAKE_LIBRARY_PATH="$LIBDIR/libssh2-bin64/lib/" -DBUILD_SHARED_LIBS="OFF" -DBUILD_CLAR="OFF" -DTHREADSAFE="OFF" -DCMAKE_INSTALL_PREFIX=$PATH64
 	cmake --build .

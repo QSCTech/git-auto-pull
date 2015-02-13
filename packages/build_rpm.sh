@@ -1,4 +1,10 @@
 #!/bin/sh
+#
+# Copyright (C) Senorsen (Zhang Sen) <sen@senorsen.com>
+#
+# This software is distributed under the terms of GPLv3 or later,
+# See `LICENSE' for more information. 
+#
 
 BINFILE=$4
 VERSION=$1

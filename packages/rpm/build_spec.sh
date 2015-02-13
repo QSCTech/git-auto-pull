@@ -1,4 +1,10 @@
 #!/bin/sh
+#
+# Copyright (C) Senorsen (Zhang Sen) <sen@senorsen.com>
+#
+# This software is distributed under the terms of GPLv3 or later,
+# See `LICENSE' for more information. 
+#
 
 echo "Summary: GitLab and GitHub Webhook auto pull service. Qiu Shi Chao Website. " > git-auto-pull.spec
 echo "Name: git-auto-pull" >> git-auto-pull.spec

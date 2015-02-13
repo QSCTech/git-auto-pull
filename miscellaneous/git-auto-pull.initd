@@ -8,7 +8,13 @@
 # Short-Description:	Stop/start git-auto-pull
 ### END INIT INFO
 
-# Author: Senorsen <sen@senorsen.com>
+#
+# Copyright (C) Senorsen (Zhang Sen) <sen@senorsen.com>
+#
+# This software is distributed under the terms of GPLv3 or later,
+# See `LICENSE' for more information. 
+#
+
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
 DESC=git-auto-pull

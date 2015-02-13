@@ -1,4 +1,10 @@
 #!/bin/sh
+#
+# Copyright (C) Senorsen (Zhang Sen) <sen@senorsen.com>
+#
+# This software is distributed under the terms of GPLv3 or later,
+# See `LICENSE' for more information. 
+#
 
 rm -rf /etc/init.d/git-auto-pull
 [ -f /var/run/git-auto-pull.pid ] && (kill -9 `cat /var/run/git-auto-pull.pid` 2>&1 >/dev/null || true)

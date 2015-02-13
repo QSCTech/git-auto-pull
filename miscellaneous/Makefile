@@ -1,3 +1,9 @@
+#
+# Copyright (C) Senorsen (Zhang Sen) <sen@senorsen.com>
+#
+# This software is distributed under the terms of GPLv3 or later,
+# See `LICENSE' for more information. 
+#
 
 CRTS=github.com.crt git.zjuqsc.com.crt
 CRT_SUFFIX=.crt

@@ -12,7 +12,7 @@ Install from make:
     make static64 # or make static32 for 32-bit systems
     sudo make install
     
-NOTE: Install using make won't install any of our repos or public key files, unless using ``make WITH_REPO=yes deb rpm``. 
+NOTE: Install using make won't install any of our repos or public key files, and this software does not depend on the repos or keys.
 
 1. Install from http://dl.zjuqsc.com/linux/
 2. Set /etc/git-auto-pull/config.json
@@ -31,4 +31,16 @@ Use it AT YOUR OWN RISK.
 
 ## License
 GPLv3 or later
+
+## Copyright
+The files below:
+- miscellaneous/config.json
+- miscellaneous/git-auto-pull.service
+- miscellaneous/git-auto-pull.initd
+- miscellaneous/patch\_lib\_1.patch
+- miscellaneous/patch\_lib\_2.patch
+- main.c
+- (Other files that have proper copyright header)
+
+are copyrighted to Senorsen <sen@senorsen.com>.
 

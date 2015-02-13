@@ -1,3 +1,10 @@
+#
+# Copyright (C) Senorsen (Zhang Sen) <sen@senorsen.com>
+#
+# This software is distributed under the terms of GPLv3 or later,
+# See `LICENSE' for more information. 
+#
+
 [Unit]
 Description=GitLab Webhook auto pull service
 After=network.target remote-fs.target
