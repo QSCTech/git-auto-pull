@@ -6,6 +6,8 @@ A tool to handle GitLab and GitHub's Push event Webhook.
 
  __NOTICE:__ Install from deb/rpm package directly will also install our apt/yum repo automatically for you. 
 
+Install from make
+
 1. Install from http://dl.zjuqsc.com/linux/
 2. Set /etc/git-auto-pull/config.json
 3. Enable and start ``git-auto-pull`` service
@@ -22,4 +24,5 @@ This software is now at a very early and unstable version.
 Use it AT YOUR OWN RISK. 
 
 ## License
-GPLv3
+GPLv3 or later
+
