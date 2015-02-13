@@ -12,4 +12,5 @@ packages/rpm/git-auto-pull
 packages/deb/*.deb
 packages/rpm/*.rpm
 tmp
+*.crt
 
