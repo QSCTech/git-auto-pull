@@ -9,7 +9,10 @@ SEMIDIR="git-auto-pull-$VERSION"
 mkdir -p packages/rpm
 rm -rf packages/rpm/$SEMIDIR
 mkdir -p packages/rpm/$SEMIDIR
-cp miscellaneous/qsc.repo miscellaneous/qsc.public.key miscellaneous/config.json miscellaneous/git-auto-pull.initd miscellaneous/git-auto-pull.service packages/rpm/$SEMIDIR
+if [ "$5" = "yes" ]; then
+  cp miscellaneous/qsc.repo miscellaneous/qsc.public.key packages/rpm/$SEMIDIR
+fi
+cp miscellaneous/config.json miscellaneous/git-auto-pull.initd miscellaneous/git-auto-pull.service packages/rpm/$SEMIDIR
 cp $BINFILE packages/rpm/$SEMIDIR/git-auto-pull.bin
 cp $BINFILE git-auto-pull.bin
 cd packages/rpm
@@ -18,7 +21,7 @@ mkdir -p ~/rpmbuild/SOURCES
 cp ${SEMIDIR}.tar.gz ~/rpmbuild/SOURCES
 rm ${SEMDIR}.tar.gz
 cd ../../
-./packages/rpm/build_spec.sh $VERSION $RELEASE
+./packages/rpm/build_spec.sh $VERSION $RELEASE $5
 mkdir -p ~/rpmbuild/SPECS
 cp git-auto-pull.spec ~/rpmbuild/SPECS
 rm git-auto-pull.bin

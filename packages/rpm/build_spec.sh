@@ -30,7 +30,6 @@ echo 'mkdir -p $RPM_BUILD_ROOT/usr/share/git-auto-pull' >> git-auto-pull.spec
 echo 'mkdir -p $RPM_BUILD_ROOT/etc/init.d' >> git-auto-pull.spec
 echo 'mkdir -p $RPM_BUILD_ROOT/lib/systemd/system' >> git-auto-pull.spec
 echo 'mkdir -p $RPM_BUILD_ROOT/etc/pki/rpm-gpg' >> git-auto-pull.spec
-echo 'mkdir -p $RPM_BUILD_ROOT/etc/yum.repos.d' >> git-auto-pull.spec
 echo 'install -s -m 755 git-auto-pull.bin $RPM_BUILD_ROOT/usr/sbin/git-auto-pull' >> git-auto-pull.spec
 echo 'install -m 644 config.json $RPM_BUILD_ROOT/etc/git-auto-pull/config.json' >> git-auto-pull.spec
 echo 'install -m 755 git-auto-pull.initd $RPM_BUILD_ROOT/etc/init.d/git-auto-pull' >> git-auto-pull.spec
@@ -38,8 +37,10 @@ echo 'install -m 755 git-auto-pull.service $RPM_BUILD_ROOT/lib/systemd/system/gi
 echo 'install -m 755 git-auto-pull.initd $RPM_BUILD_ROOT/usr/share/git-auto-pull/git-auto-pull' >> git-auto-pull.spec
 echo 'install -m 755 git-auto-pull.service $RPM_BUILD_ROOT/usr/share/git-auto-pull/git-auto-pull.service' >> git-auto-pull.spec
 echo 'install -d $RPM_BUILD_ROOT/var/log/git-auto-pull -o root -m 755' >> git-auto-pull.spec
-echo 'install -m 644 qsc.public.key $RPM_BUILD_ROOT/usr/share/git-auto-pull/qsc.public.key' >> git-auto-pull.spec
-echo 'install -m 644 qsc.repo $RPM_BUILD_ROOT/usr/share/git-auto-pull/qsc.repo' >> git-auto-pull.spec
+if [ "$3" = "yes" ]; then
+  echo 'install -m 644 qsc.public.key $RPM_BUILD_ROOT/usr/share/git-auto-pull/qsc.public.key' >> git-auto-pull.spec
+  echo 'install -m 644 qsc.repo $RPM_BUILD_ROOT/usr/share/git-auto-pull/qsc.repo' >> git-auto-pull.spec
+fi
 echo "" >> git-auto-pull.spec
 echo "%files" >> git-auto-pull.spec
 echo "%defattr(-,root,root)" >> git-auto-pull.spec
@@ -48,8 +49,10 @@ echo "%dir /var/log/git-auto-pull" >> git-auto-pull.spec
 echo "/usr/sbin/git-auto-pull" >> git-auto-pull.spec
 echo "/usr/share/git-auto-pull/git-auto-pull" >> git-auto-pull.spec
 echo "/usr/share/git-auto-pull/git-auto-pull.service" >> git-auto-pull.spec
-echo "/usr/share/git-auto-pull/qsc.public.key" >> git-auto-pull.spec
-echo "/usr/share/git-auto-pull/qsc.repo" >> git-auto-pull.spec
+if [ "$3" = "yes" ]; then
+  echo "/usr/share/git-auto-pull/qsc.public.key" >> git-auto-pull.spec
+  echo "/usr/share/git-auto-pull/qsc.repo" >> git-auto-pull.spec
+fi
 echo "/etc/init.d/git-auto-pull" >> git-auto-pull.spec
 echo "/lib/systemd/system/git-auto-pull.service" >> git-auto-pull.spec
 echo "" >> git-auto-pull.spec
@@ -58,9 +61,11 @@ echo 'rm -rf $RPM_BUILD_ROOT' >> git-auto-pull.spec
 echo "" >> git-auto-pull.spec
 echo "%post" >> git-auto-pull.spec
 echo "systemctl daemon-reload || true" >> git-auto-pull.spec
-echo "cp /usr/share/git-auto-pull/qsc.public.key /etc/pki/rpm-gpg/RPM-GPG-KEY-QSC || true" >> git-auto-pull.spec
-echo "cp /usr/share/git-auto-pull/qsc.repo /etc/yum.repos.d/qsc.repo || true" >> git-auto-pull.spec
-echo "rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-QSC 2>&1 >/dev/null || true" >> git-auto-pull.spec
+if [ "$3" = "yes" ]; then
+  echo "cp /usr/share/git-auto-pull/qsc.public.key /etc/pki/rpm-gpg/RPM-GPG-KEY-QSC || true" >> git-auto-pull.spec
+  echo "cp /usr/share/git-auto-pull/qsc.repo /etc/yum.repos.d/qsc.repo || true" >> git-auto-pull.spec
+  echo "rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-QSC 2>&1 >/dev/null || true" >> git-auto-pull.spec
+fi
 echo "command -v systemctl 2>&1 >/dev/null && systemctl restart git-auto-pull || true" >> git-auto-pull.spec
 echo "command -v systemctl 2>&1 >/dev/null || /etc/init.d/git-auto-pull restart || true" >> git-auto-pull.spec
 echo "" >> git-auto-pull.spec

@@ -18,7 +18,9 @@ do_sysvinit_inst() {
 }
 
 pidof systemd 2>&1 >/dev/null && do_systemd_inst || do_sysvinit_inst || true
-cp /usr/share/git-auto-pull/qsc.list /etc/apt/sources.list.d/qsc.list
-apt-key add /usr/share/git-auto-pull/qsc.public.key 2>&1 >/dev/null || true
+[ -f /usr/share/git-auto-pull/qsc.list ] && cp /usr/share/git-auto-pull/qsc.list /etc/apt/sources.list.d/qsc.list
+[ -f /usr/share/git-auto-pull/qsc.public.key ] && {
+	apt-key add /usr/share/git-auto-pull/qsc.public.key 2>&1 >/dev/null || true
+}
 
 
