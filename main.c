@@ -342,7 +342,7 @@ void parse_post_obj(char * str, char * realip) {
 					}
 				} else {
 					printf("Change user: %s(%ld,%ld)\n", git_user[i], (long) pwd.pw_uid, (long) pwd.pw_gid);
-					if (setegid(pwd.pw_uid) != 0 && setgid(pwd.pw_gid) != 0) {
+					if (setegid(pwd.pw_gid) != 0 && setgid(pwd.pw_gid) != 0) {
 						printf("Change gid failed! \n");
 						fprintf(stderr, "Change user to %s(%ld,%ld) failed for %s \n", git_user[i], pwd.pw_uid, pwd.pw_gid, repo_path[i]);
 					}

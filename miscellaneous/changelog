@@ -1,3 +1,9 @@
+git-auto-pull (0.4.68) stable; urgency=low
+
+ * Fixed a bug that change egid according to uid
+
+-- Senorsen <sen@senorsen.com> Fri, 13 Feb 14:07:51 +0800
+
 git-auto-pull (0.4.54) stable; urgency=low
 
  * Initial release
