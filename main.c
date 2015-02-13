@@ -50,9 +50,11 @@
 #define VERSION "unknown"
 #endif
 
-#define BACKLOG 10
+#define BACKLOG 100
+#define DEFAULT_PORT 8081
 
 // Sockets stuff
+uint16_t listen_port;
 int sockfd, new_fd;
 struct sockaddr_in their_addr;
 socklen_t sin_size;
@@ -105,6 +107,16 @@ int read_conf() {
 		return 1;
 	}
 	const char * default_user = NULL;
+	json_object * j_port;
+	json_object_object_get_ex(jobj, "port", &j_port);
+	if (json_object_get_type(j_port) == json_type_int) {
+		listen_port = json_object_get_int(j_port);
+	} else if (json_object_get_type(j_port) == json_type_null) {
+		listen_port = DEFAULT_PORT;
+	} else {
+		printerr("error: port can only be json_type_int.");
+		return 1;
+	}
 	json_object * j_default_user;
 	json_object_object_get_ex(jobj, "default_user", &j_default_user);
 	if (json_object_get_type(j_default_user) == json_type_string) {
@@ -244,7 +256,7 @@ void bind_port() {
 	}
 
 	my_addr.sin_family = AF_INET;
-	my_addr.sin_port = htons(8081);
+	my_addr.sin_port = htons(listen_port);
 	my_addr.sin_addr.s_addr = INADDR_ANY;
 	memset(&(my_addr.sin_zero), 0, 8);
 

@@ -5,8 +5,8 @@
 # See `LICENSE' for more information. 
 #
 
-VERSION=0.4.68
-RELEASE=2
+VERSION=0.4.69
+RELEASE=1
 LIBDIR=tmp
 CFLAGS=
 ifeq ($(WITH_REPO),yes)
