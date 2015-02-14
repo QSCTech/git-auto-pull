@@ -5,7 +5,7 @@
 # See `LICENSE' for more information. 
 #
 
-VERSION=0.4.69
+VERSION=0.4.70
 RELEASE=1
 LIBDIR=tmp
 CFLAGS=
@@ -32,7 +32,7 @@ static32:
 	gcc -static main.c -D VERSION=\"$(VERSION)\" -Wl,--as-needed -Wa,--noexecstack -I $(LIBDIR)/http-parser-bin32/ -L $(LIBDIR)/http-parser-bin32/ -I $(LIBDIR)/libssh2-bin32/include -L $(LIBDIR)/libgit2-bin32 -L $(LIBDIR)/json-c-bin32/lib -I $(LIBDIR)/libgcrypt-bin32/include -I $(LIBDIR)/libgit2/include -I $(LIBDIR)/json-c-bin32/include $(LIBDIR)/libssh2-bin32/lib/libssh2.a $(LIBDIR)/http-parser-bin32/libhttp_parser.a $(LIBDIR)/libgit2-bin32/libgit2.a $(LIBDIR)/json-c-bin32/lib/libjson-c.a -o tmp/git-auto-pull-static_i386 -L $(LIBDIR)/libssh2-bin32/lib -lssh2 -L $(LIBDIR)/libgcrypt-bin32/lib -l gcrypt -L $(LIBDIR)/libgpg-error-bin32/lib -l gpg-error -I $(LIBDIR)/openssl-bin32/include -L $(LIBDIR)/zlib-bin32/lib -lz -L $(LIBDIR)/openssl-bin32/lib -lssl -lcrypto $(LIBDIR)/openssl-bin32/lib/libssl.a $(LIBDIR)/openssl-bin32/lib/libcrypto.a -L /usr/lib/i386-linux-gnu/ -lrt -ldl -m32
 
 clean:
-	$(MAKE) -C miscellaneous clean
+	rm -rf miscellaneous/*.crt
 	rm -rf tmp/git-auto-pull*
 	rm -rf packages/deb/*.deb packages/deb/git-auto-pull/
 	rm -rf packages/rpm/*.rpm
@@ -52,7 +52,7 @@ deb: prepack static64 static32
 	$(COPY_DEB_REPO_KEY)
 	cp miscellaneous/postinst miscellaneous/postrm miscellaneous/copyright miscellaneous/conffiles miscellaneous/changelog packages/deb/git-auto-pull/DEBIAN/
 	cp miscellaneous/git-auto-pull.initd packages/deb/git-auto-pull/usr/share/git-auto-pull/git-auto-pull
-	cp $(DEB_SHARE_FILES) miscellaneous/git-auto-pull.service packages/deb/git-auto-pull/usr/share/git-auto-pull/
+	cp $(DEB_SHARE_FILES) miscellaneous/*.crt miscellaneous/git-auto-pull.service packages/deb/git-auto-pull/usr/share/git-auto-pull/
 	cp miscellaneous/config.json packages/deb/git-auto-pull/etc/git-auto-pull/config.json
 	rm -rf packages/deb/git-auto-pull/usr/sbin/git-auto-pull
 	cp tmp/git-auto-pull-static_amd64 packages/deb/git-auto-pull/usr/sbin/git-auto-pull

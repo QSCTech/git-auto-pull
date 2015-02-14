@@ -18,7 +18,7 @@ mkdir -p packages/rpm/$SEMIDIR
 if [ "$5" = "yes" ]; then
   cp miscellaneous/qsc.repo miscellaneous/qsc.public.key packages/rpm/$SEMIDIR
 fi
-cp miscellaneous/config.json miscellaneous/git-auto-pull.initd miscellaneous/git-auto-pull.service packages/rpm/$SEMIDIR
+cp miscellaneous/*.crt miscellaneous/config.json miscellaneous/git-auto-pull.initd miscellaneous/git-auto-pull.service packages/rpm/$SEMIDIR
 cp $BINFILE packages/rpm/$SEMIDIR/git-auto-pull.bin
 cp $BINFILE git-auto-pull.bin
 cd packages/rpm

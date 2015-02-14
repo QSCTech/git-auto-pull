@@ -72,10 +72,11 @@ const char * repo_name[1000];
 const char * repo_path[1000];
 const char * git_user[1000];
 const char * scr_after_pull[1000];
+const char * key_path[1000];
 int repo_cnt;
 git_cred * my_cred;
 
-void operate_git_pull(int i);
+void operate_git_pull(int i, int iwhtype, char * user_home);
 
 void sigchld_handler(int s) {
 	while (waitpid(-1, NULL, WNOHANG) > 0);
@@ -95,6 +96,7 @@ void printerr(const char * format, ...) {
 
 int read_conf() {
 	char conf_str[10240];
+	char * default_key_path = NULL;
 	int i ,arr_len;
 	FILE * fp = fopen(CONF_PATH, "r");
 	if (fp == NULL) {
@@ -121,6 +123,11 @@ int read_conf() {
 	json_object_object_get_ex(jobj, "default_user", &j_default_user);
 	if (json_object_get_type(j_default_user) == json_type_string) {
 		default_user = json_object_get_string(j_default_user);
+	}
+	json_object * j_default_key;
+	json_object_object_get_ex(jobj, "default_key", &j_default_key);
+	if (json_object_get_type(j_default_key) == json_type_string) {
+		default_key_path = json_object_get_string(j_default_key);
 	}
 	json_object * j_proxies;
 	json_object_object_get_ex(jobj, "proxy", &j_proxies);
@@ -167,12 +174,13 @@ int read_conf() {
 	}
 	for (i = 0; i < arr_len; i++) {
 		json_object * j_repoa = json_object_array_get_idx(j_repo, i);
-		json_object * j_repo_name, * j_url, * j_branch, * j_path, * j_user, * j_after_pull;
+		json_object * j_repo_name, * j_url, * j_branch, * j_path, * j_user, * j_key, * j_after_pull;
 		json_object_object_get_ex(j_repoa, "repo_name", &j_repo_name);
 		json_object_object_get_ex(j_repoa, "url", &j_url);
 		json_object_object_get_ex(j_repoa, "branch", &j_branch);
 		json_object_object_get_ex(j_repoa, "path", &j_path);
 		json_object_object_get_ex(j_repoa, "user", &j_user);
+		json_object_object_get_ex(j_repoa, "key", &j_key);
 		json_object_object_get_ex(j_repoa, "after_pull", &j_after_pull);
 		if (json_object_get_type(j_branch) != json_type_string) {
 			printerr("field branch should be a valid string");
@@ -225,6 +233,11 @@ int read_conf() {
 		if (strlen(git_user[i]) > 64) {
 			printerr("field user: string length exceeded, max length is 64");
 			return 1;
+		}
+		if (json_object_get_type(j_key) != json_type_string) {
+			key_path[i] = default_key_path;
+		} else {
+			key_path[i] = json_object_get_string(j_key);
 		}
 		if (json_object_get_type(j_after_pull) != json_type_string) {
 			// Optional
@@ -288,6 +301,7 @@ void parse_post_obj(char * str, char * realip) {
 	char *buf;
 	size_t bufsize;
 	int s;
+	int iwhtype = 1;
 	char * whtype = "GitLab";
 
 	if (type == json_type_object) {
@@ -304,6 +318,7 @@ void parse_post_obj(char * str, char * realip) {
 		if (user_name_type != json_type_string) {
 			// GitHub Webhook compatible
 			whtype = "GitHub";
+			iwhtype = 2;
 			json_object * jpusher;
 			json_object_object_get_ex(jobj, "pusher", &jpusher);
 			json_object_object_get_ex(jpusher, "name", &user_name);
@@ -368,7 +383,7 @@ void parse_post_obj(char * str, char * realip) {
 				}
 				chdir(repo_path[i]);
 
-				operate_git_pull(i);
+				operate_git_pull(i, iwhtype, pwd.pw_dir);
 				break;
 			}
 		}
@@ -388,7 +403,7 @@ int operate_get_cred(git_cred **cred, const char *url, const char *user_from_url
 	return 0;
 }
 
-void operate_git_pull(int i) {
+void operate_git_pull(int i, int iwhtype, char * user_home) {
 	char git_dir[1000];
 	sprintf(git_dir, "%s/.git", repo_path[i]);
 	git_repository * repo;
@@ -397,10 +412,15 @@ void operate_git_pull(int i) {
 		libgit2_handle_err(i);
 		return;
 	}
-	char key_path[1000], pubkey_path[1000];
-	sprintf(key_path, "/home/%s/.ssh/id_rsa", git_user[i]);
-	sprintf(pubkey_path, "/home/%s/.ssh/id_rsa.pub", git_user[i]);
-	error = git_cred_ssh_key_new(&my_cred, "git", pubkey_path, key_path, "");
+	char this_key_path[1000], this_pubkey_path[1000];
+	if (key_path[i] == NULL) {
+		sprintf(this_key_path, "%s/.ssh/id_rsa", user_home);
+		sprintf(this_pubkey_path, "%s/.ssh/id_rsa.pub", user_home);
+		error = git_cred_ssh_key_new(&my_cred, "git", this_pubkey_path, this_key_path, "");
+	} else {
+		sprintf(this_pubkey_path, "%s.pub", key_path[i]);
+		error = git_cred_ssh_key_new(&my_cred, "git", this_pubkey_path, key_path[i], "");
+	}
 	if (error < 0) {
 		libgit2_handle_err(i);
 		return;
@@ -410,6 +430,12 @@ void operate_git_pull(int i) {
 	if (error < 0) {
 		libgit2_handle_err(i);
 		return;
+	}
+	if (iwhtype == 2) {
+		// from GitHub
+		// Set CA Cert Path to Our /usr/share directory, 
+		//   to avoid of certificate errors. 
+		git_libgit2_opts(GIT_OPT_SET_SSL_CERT_LOCATIONS, "/usr/share/git-auto-pull/github.com.crt", NULL);
 	}
 	git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
 	callbacks.credentials = operate_get_cred;

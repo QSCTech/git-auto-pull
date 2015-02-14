@@ -1,12 +1,19 @@
+git-auto-pull (0.4.69) stable; urgency=low
+
+ * Now supports specified pubkey.
+ * Fix GitHub support (by specify cert path)
+
+ -- Senorsen <sen@senorsen.com> Sat, 14 Feb 19:20:44 +0800
+
 git-auto-pull (0.4.68) stable; urgency=low
 
  * Fixed a bug that change egid according to uid
 
--- Senorsen <sen@senorsen.com> Fri, 13 Feb 14:07:51 +0800
+ -- Senorsen <sen@senorsen.com> Fri, 13 Feb 14:07:51 +0800
 
 git-auto-pull (0.4.54) stable; urgency=low
 
  * Initial release
 
--- Senorsen <sen@senorsen.com> Mon, 9 Feb 13:00:00 +0800
+ -- Senorsen <sen@senorsen.com> Mon, 9 Feb 13:00:00 +0800
 

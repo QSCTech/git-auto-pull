@@ -1,15 +1,17 @@
 {
 	"port": 8081,
-	"default_user": "website",
-	"proxy": ["192.168.73.46"],
+	"default_user": "some_system_user",
+	"default_pubkey": "/path/to/your/pubkey",
+	"proxy": ["IP_OF_YOUR_PROXY"],
 	"proxy_header": "X-Real-IP",
 	"repo": [
 		{
-			"repo_name": "qsc-mobile-api-2-5",
-			"url": "git@git.zjuqsc.com:qsc-mobile/qsc-mobile-api-2-5.git",
+			"repo_name": "repo",
+			"url": "git@git.sample.com:user/repo.git",
 			"branch": "deploy",
-			"path": "/home/website/qsc-mobile-api-2-5",
-			"user": "website",
+			"path": "/data/some_path_to_the_repo",
+			"user": "some_system_user",
+			"pubkey": "/path/to/your/pubkey",
 			"after_pull": "echo hi"
 		}
 	]
