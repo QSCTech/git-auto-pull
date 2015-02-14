@@ -6,7 +6,7 @@
 #
 
 VERSION=0.4.71
-RELEASE=2
+RELEASE=3
 LIBDIR=tmp
 CFLAGS=
 ifeq ($(WITH_REPO),yes)

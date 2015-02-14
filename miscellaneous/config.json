@@ -1,7 +1,7 @@
 {
 	"port": 8081,
 	"default_user": "some_system_user",
-	"default_key": "/path/to/your/pubkey",
+	"default_key": "/path/to/your/ssh_key",
 	"proxy": ["IP_OF_YOUR_PROXY"],
 	"proxy_header": "X-Real-IP",
 	"repo": [
@@ -11,7 +11,7 @@
 			"branch": "deploy",
 			"path": "/data/some_path_to_the_repo",
 			"user": "some_system_user",
-			"key": "/path/to/your/pubkey",
+			"key": "/path/to/your/ssh_key",
 			"after_pull": "echo hi"
 		}
 	]
