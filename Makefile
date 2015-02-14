@@ -5,7 +5,7 @@
 # See `LICENSE' for more information. 
 #
 
-VERSION=0.4.70
+VERSION=0.4.71
 RELEASE=1
 LIBDIR=tmp
 CFLAGS=

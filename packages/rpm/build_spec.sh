@@ -42,6 +42,8 @@ echo 'install -m 755 git-auto-pull.initd $RPM_BUILD_ROOT/etc/init.d/git-auto-pul
 echo 'install -m 755 git-auto-pull.service $RPM_BUILD_ROOT/lib/systemd/system/git-auto-pull.service' >> git-auto-pull.spec
 echo 'install -m 755 git-auto-pull.initd $RPM_BUILD_ROOT/usr/share/git-auto-pull/git-auto-pull' >> git-auto-pull.spec
 echo 'install -m 755 git-auto-pull.service $RPM_BUILD_ROOT/usr/share/git-auto-pull/git-auto-pull.service' >> git-auto-pull.spec
+echo 'install -m 644 github.com.crt $RPM_BUILD_ROOT/usr/share/git-auto-pull/github.com.crt' >> git-auto-pull.spec
+echo 'install -m 644 git.zjuqsc.com.crt $RPM_BUILD_ROOT/usr/share/git-auto-pull/git.zjuqsc.com.crt' >> git-auto-pull.spec
 echo 'install -d $RPM_BUILD_ROOT/var/log/git-auto-pull -o root -m 755' >> git-auto-pull.spec
 if [ "$3" = "yes" ]; then
   echo 'install -m 644 qsc.public.key $RPM_BUILD_ROOT/usr/share/git-auto-pull/qsc.public.key' >> git-auto-pull.spec
@@ -59,6 +61,8 @@ if [ "$3" = "yes" ]; then
   echo "/usr/share/git-auto-pull/qsc.public.key" >> git-auto-pull.spec
   echo "/usr/share/git-auto-pull/qsc.repo" >> git-auto-pull.spec
 fi
+echo "/usr/share/git-auto-pull/github.com.crt" >> git-auto-pull.spec
+echo "/usr/share/git-auto-pull/git.zjuqsc.com.crt" >> git-auto-pull.spec
 echo "/etc/init.d/git-auto-pull" >> git-auto-pull.spec
 echo "/lib/systemd/system/git-auto-pull.service" >> git-auto-pull.spec
 echo "" >> git-auto-pull.spec
