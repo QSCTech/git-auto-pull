@@ -53,6 +53,8 @@
 #define BACKLOG 100
 #define DEFAULT_PORT 8081
 
+int debug_flag;
+
 // Sockets stuff
 uint16_t listen_port;
 int sockfd, new_fd;
@@ -293,6 +295,11 @@ void bind_port() {
 }
 
 void parse_post_obj(char * str, char * realip) {
+
+	if (debug_flag) {
+		printf("[FUNCTION] parse_post_obj JSON %s\n", str);
+	}
+
 	json_object * jobj = json_tokener_parse(str);
 	enum json_type type = json_object_get_type(jobj);
 
@@ -507,7 +514,7 @@ void operate_git_pull(int i, int iwhtype, char * user_home) {
 	}
 */
 	git_annotated_commit_free(myhead);
-	// 我也是别无他法 我也是醉了……
+	// Dirty hack!!
 	char cmd[1000];
 	sprintf(cmd, "git merge %s", remote_branch);
 	system(cmd);
@@ -523,6 +530,12 @@ int main(int argc, char * argv[]) {
 	char buffer[25000], headers[25000], charset[30], client_addr[32];
 	char post_content[25000], org[25000], *po;
 	long filesize, range=0, peername, i;
+
+	if (argc >= 2 && (strcmp(argv[1], "-d") == 0 || strcmp(argv[1], "--debug") == 0)) {
+		debug_flag = 1;
+	} else {
+		debug_flag = 0;
+	}
 
 	if (geteuid() != 0) {
 		fprintf(stderr, "Error: I need root privilege.\n");

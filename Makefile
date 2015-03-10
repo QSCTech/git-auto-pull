@@ -5,10 +5,12 @@
 # See `LICENSE' for more information. 
 #
 
-VERSION=0.4.71
+VERSION=0.4.72
 RELEASE=3
 LIBDIR=tmp
 CFLAGS=
+CC=gcc
+
 ifeq ($(WITH_REPO),yes)
 	DEB_SHARE_FILES +=  miscellaneous/qsc.public.key miscellaneous/qsc.list 
 endif
@@ -17,7 +19,7 @@ all: static64 static32
 
 debug:
 	mkdir -p tmp
-	gcc -static main.c -D VERSION=\"$(VERSION)\" -g $(CFLAGS) -Wl,--as-needed -Wa,--noexecstack -I $(LIBDIR)/http-parser-bin64/ -L $(LIBDIR)/http-parser-bin64/ -I $(LIBDIR)/libssh2-bin64/include -L $(LIBDIR)/libgit2-bin64 -L $(LIBDIR)/json-c-bin64/lib -I $(LIBDIR)/libgcrypt-bin64/include -I $(LIBDIR)/libgit2/include -I $(LIBDIR)/json-c-bin64/include $(LIBDIR)/libssh2-bin64/lib/libssh2.a $(LIBDIR)/http-parser-bin64/libhttp_parser.a $(LIBDIR)/libgit2-bin64/libgit2.a $(LIBDIR)/json-c-bin64/lib/libjson-c.a -o tmp/git-auto-pull-debug -L $(LIBDIR)/libssh2-bin64/lib -lssh2 -L $(LIBDIR)/libgcrypt-bin64/lib -l gcrypt -L $(LIBDIR)/libgpg-error-bin64/lib -l gpg-error -I $(LIBDIR)/openssl-bin64/include -L $(LIBDIR)/zlib-bin64/lib -lz -L $(LIBDIR)/openssl-bin64/lib -lssl -lcrypto $(LIBDIR)/openssl-bin64/lib/libssl.a $(LIBDIR)/openssl-bin64/lib/libcrypto.a -L /usr/lib/z86_64-linux-gnu/ -lrt -ldl
+	$(CC) -static main.c -D VERSION=\"$(VERSION)\" -g $(CFLAGS) -Wl,--as-needed -Wa,--noexecstack -I $(LIBDIR)/http-parser-bin64/ -L $(LIBDIR)/http-parser-bin64/ -I $(LIBDIR)/libssh2-bin64/include -L $(LIBDIR)/libgit2-bin64 -L $(LIBDIR)/json-c-bin64/lib -I $(LIBDIR)/libgcrypt-bin64/include -I $(LIBDIR)/libgit2/include -I $(LIBDIR)/json-c-bin64/include $(LIBDIR)/libssh2-bin64/lib/libssh2.a $(LIBDIR)/http-parser-bin64/libhttp_parser.a $(LIBDIR)/libgit2-bin64/libgit2.a $(LIBDIR)/json-c-bin64/lib/libjson-c.a -o tmp/git-auto-pull-debug -L $(LIBDIR)/libssh2-bin64/lib -lssh2 -L $(LIBDIR)/libgcrypt-bin64/lib -l gcrypt -L $(LIBDIR)/libgpg-error-bin64/lib -l gpg-error -I $(LIBDIR)/openssl-bin64/include -L $(LIBDIR)/zlib-bin64/lib -lz -L $(LIBDIR)/openssl-bin64/lib -lssl -lcrypto $(LIBDIR)/openssl-bin64/lib/libssl.a $(LIBDIR)/openssl-bin64/lib/libcrypto.a -L /usr/lib/z86_64-linux-gnu/ -lrt -ldl
 
 install: debug
 	install -m 755 tmp/git-auto-pull-debug /usr/sbin/git-auto-pull
@@ -25,11 +27,11 @@ install: debug
 
 static64:
 	mkdir -p tmp
-	gcc -static main.c -D VERSION=\"$(VERSION)\" $(CFLAGS) -Wl,--as-needed -Wa,--noexecstack -I $(LIBDIR)/http-parser-bin64/ -L $(LIBDIR)/http-parser-bin64/ -I $(LIBDIR)/libssh2-bin64/include -L $(LIBDIR)/libgit2-bin64 -L $(LIBDIR)/json-c-bin64/lib -I $(LIBDIR)/libgcrypt-bin64/include -I $(LIBDIR)/libgit2/include -I $(LIBDIR)/json-c-bin64/include $(LIBDIR)/libssh2-bin64/lib/libssh2.a $(LIBDIR)/http-parser-bin64/libhttp_parser.a $(LIBDIR)/libgit2-bin64/libgit2.a $(LIBDIR)/json-c-bin64/lib/libjson-c.a -o tmp/git-auto-pull-static_amd64 -L $(LIBDIR)/libssh2-bin64/lib -lssh2 -L $(LIBDIR)/libgcrypt-bin64/lib -l gcrypt -L $(LIBDIR)/libgpg-error-bin64/lib -l gpg-error -I $(LIBDIR)/openssl-bin64/include -L $(LIBDIR)/zlib-bin64/lib -lz -L $(LIBDIR)/openssl-bin64/lib -lssl -lcrypto $(LIBDIR)/openssl-bin64/lib/libssl.a $(LIBDIR)/openssl-bin64/lib/libcrypto.a -L /usr/lib/z86_64-linux-gnu/ -lrt -ldl -m64
+	$(CC) -static main.c -D VERSION=\"$(VERSION)\" $(CFLAGS) -Wl,--as-needed -Wa,--noexecstack -I $(LIBDIR)/http-parser-bin64/ -L $(LIBDIR)/http-parser-bin64/ -I $(LIBDIR)/libssh2-bin64/include -L $(LIBDIR)/libgit2-bin64 -L $(LIBDIR)/json-c-bin64/lib -I $(LIBDIR)/libgcrypt-bin64/include -I $(LIBDIR)/libgit2/include -I $(LIBDIR)/json-c-bin64/include $(LIBDIR)/libssh2-bin64/lib/libssh2.a $(LIBDIR)/http-parser-bin64/libhttp_parser.a $(LIBDIR)/libgit2-bin64/libgit2.a $(LIBDIR)/json-c-bin64/lib/libjson-c.a -o tmp/git-auto-pull-static_amd64 -L $(LIBDIR)/libssh2-bin64/lib -lssh2 -L $(LIBDIR)/libgcrypt-bin64/lib -l gcrypt -L $(LIBDIR)/libgpg-error-bin64/lib -l gpg-error -I $(LIBDIR)/openssl-bin64/include -L $(LIBDIR)/zlib-bin64/lib -lz -L $(LIBDIR)/openssl-bin64/lib -lssl -lcrypto $(LIBDIR)/openssl-bin64/lib/libssl.a $(LIBDIR)/openssl-bin64/lib/libcrypto.a -L /usr/lib/z86_64-linux-gnu/ -lrt -ldl -m64
 
 static32:
 	mkdir -p tmp
-	gcc -static main.c -D VERSION=\"$(VERSION)\" -Wl,--as-needed -Wa,--noexecstack -I $(LIBDIR)/http-parser-bin32/ -L $(LIBDIR)/http-parser-bin32/ -I $(LIBDIR)/libssh2-bin32/include -L $(LIBDIR)/libgit2-bin32 -L $(LIBDIR)/json-c-bin32/lib -I $(LIBDIR)/libgcrypt-bin32/include -I $(LIBDIR)/libgit2/include -I $(LIBDIR)/json-c-bin32/include $(LIBDIR)/libssh2-bin32/lib/libssh2.a $(LIBDIR)/http-parser-bin32/libhttp_parser.a $(LIBDIR)/libgit2-bin32/libgit2.a $(LIBDIR)/json-c-bin32/lib/libjson-c.a -o tmp/git-auto-pull-static_i386 -L $(LIBDIR)/libssh2-bin32/lib -lssh2 -L $(LIBDIR)/libgcrypt-bin32/lib -l gcrypt -L $(LIBDIR)/libgpg-error-bin32/lib -l gpg-error -I $(LIBDIR)/openssl-bin32/include -L $(LIBDIR)/zlib-bin32/lib -lz -L $(LIBDIR)/openssl-bin32/lib -lssl -lcrypto $(LIBDIR)/openssl-bin32/lib/libssl.a $(LIBDIR)/openssl-bin32/lib/libcrypto.a -L /usr/lib/i386-linux-gnu/ -lrt -ldl -m32
+	$(CC) -static main.c -D VERSION=\"$(VERSION)\" -Wl,--as-needed -Wa,--noexecstack -I $(LIBDIR)/http-parser-bin32/ -L $(LIBDIR)/http-parser-bin32/ -I $(LIBDIR)/libssh2-bin32/include -L $(LIBDIR)/libgit2-bin32 -L $(LIBDIR)/json-c-bin32/lib -I $(LIBDIR)/libgcrypt-bin32/include -I $(LIBDIR)/libgit2/include -I $(LIBDIR)/json-c-bin32/include $(LIBDIR)/libssh2-bin32/lib/libssh2.a $(LIBDIR)/http-parser-bin32/libhttp_parser.a $(LIBDIR)/libgit2-bin32/libgit2.a $(LIBDIR)/json-c-bin32/lib/libjson-c.a -o tmp/git-auto-pull-static_i386 -L $(LIBDIR)/libssh2-bin32/lib -lssh2 -L $(LIBDIR)/libgcrypt-bin32/lib -l gcrypt -L $(LIBDIR)/libgpg-error-bin32/lib -l gpg-error -I $(LIBDIR)/openssl-bin32/include -L $(LIBDIR)/zlib-bin32/lib -lz -L $(LIBDIR)/openssl-bin32/lib -lssl -lcrypto $(LIBDIR)/openssl-bin32/lib/libssl.a $(LIBDIR)/openssl-bin32/lib/libcrypto.a -L /usr/lib/i386-linux-gnu/ -lrt -ldl -m32
 
 clean:
 	rm -rf miscellaneous/*.crt
