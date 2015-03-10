@@ -537,6 +537,24 @@ int main(int argc, char * argv[]) {
 		debug_flag = 0;
 	}
 
+	if (argc >= 2 && (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0)) {
+		printf("git-auto-pull %s\n", VERSION);
+		return 0;
+	}
+
+	if (argc >= 2 && (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)) {
+		printf("git-auto-pull %s\n", VERSION);
+		printf("Usage:	%s [OPTION...]\n\n", argv[0]);
+		printf("Help Options:\n");
+		printf("  -h, --help				Show help options\n");
+		printf("  -v, --version				Show program version\n");
+		printf("\n");
+		printf("Developer Options:\n");
+		printf("  -d, --debug				Log debug info into log\n");
+		printf("\n");
+		return 0;
+	}
+
 	if (geteuid() != 0) {
 		fprintf(stderr, "Error: I need root privilege.\n");
 		return 1;
