@@ -296,10 +296,6 @@ void bind_port() {
 
 void parse_post_obj(char * str, char * realip) {
 
-	if (debug_flag) {
-		printf("[FUNCTION] parse_post_obj JSON %s\n", str);
-	}
-
 	json_object * jobj = json_tokener_parse(str);
 	enum json_type type = json_object_get_type(jobj);
 
@@ -523,13 +519,39 @@ void operate_git_pull(int i, int iwhtype, char * user_home) {
 	sleep(10); // Long time sleep
 }
 
+int socket_select(fd) {
+	fd_set read_set;
+	struct timeval timeout;
+
+	timeout.tv_sec = 20;
+	timeout.tv_usec = 0;
+
+	FD_ZERO(&read_set);
+	FD_SET(fd, &read_set);
+
+	int ret = select(fd + 1, &read_set, NULL, NULL, &timeout);
+
+	if (ret < 0) {
+		printerr("socket_select error: %d", ret);
+		exit(1);
+	}
+
+	if (ret == 0) {
+		return 1;
+	}
+
+	if (ret == 1) {
+		return 0;
+	}
+}
+
 int main(int argc, char * argv[]) {
 	char in[25000],  sent[500], code[50], file[200], mime[100], moved[200], length[100], auth[200], auth_dir[500], start[100], end[100];
 	char *result=NULL, *hostname, *hostnamef, *lines, *ext=NULL, *extf, *auth_dirf=NULL, *authf=NULL, *rangetmp, *header, *headerval, *headerline, *realip;
 	int buffer_length;
 	char buffer[25000], headers[25000], charset[30], client_addr[32];
-	char post_content[25000], org[25000], *po;
-	long filesize, range=0, peername, i;
+	char post_content[25000], org[34000], *po;
+	long filesize, range=0, peername, i, req_content_length, bytes_len;
 
 	if (argc >= 2 && (strcmp(argv[1], "-d") == 0 || strcmp(argv[1], "--debug") == 0)) {
 		debug_flag = 1;
@@ -560,18 +582,19 @@ int main(int argc, char * argv[]) {
 		return 1;
 	}
 	git_libgit2_init();
-	// Then set up daemon
-	freopen(LOG_PATH, "a", stdout);
-	freopen(LOG_ERR_PATH, "a", stderr);
-	setbuf(stdout, NULL);
-	setbuf(stderr, NULL);
-	printf("%s: Version %s\n", argv[0], VERSION);
+	if (!debug_flag) {
+		// Then set up daemon
+		freopen(LOG_PATH, "a", stdout);
+		freopen(LOG_ERR_PATH, "a", stderr);
+		setbuf(stdout, NULL);
+		setbuf(stderr, NULL);
+		daemon(0, 1);
+	}
+	printf("%s %s\n", argv[0], VERSION);
 	if (read_conf()) {
-		printf("Start error: cannot read config\n");
-		fprintf(stderr, "Error: cannot read config\n");
+		printerr("Start error: cannot read config");
 		return 1;
 	}
-	daemon(0, 1);
 	bind_port();
 	int pid = getpid();
 	FILE * fp;
@@ -598,7 +621,8 @@ int main(int argc, char * argv[]) {
 		if (!fork()) {
 			close(sockfd);
 			int find = 0;
-			if (read(new_fd, in, 8000) == -1) {
+			bytes_len = read(new_fd, in, 8000);
+			if (bytes_len == -1) {
 				perror("receive");
 			} else {
 				strcpy(headers, in);
@@ -606,6 +630,7 @@ int main(int argc, char * argv[]) {
 				lines = strtok(in, "\n");
 				result = strtok(lines, " ");
 				result = strtok(NULL, " ");
+				req_content_length = 0;
 				// Read proxy_header
 				char * tokr1, * tokr2;
 				headerline = strtok_r(headers, "\n", &tokr1);
@@ -618,12 +643,23 @@ int main(int argc, char * argv[]) {
 						}
 						if (headerval[0] == ' ') headerval++;
 					}
+
+					if (debug_flag && headerval && header) {
+						printf("HTTP Header: %s %s\n", header, headerval);
+					}
+
 					if (headerval != NULL && strcmp(header, proxy_header) == 0) {
 						for (i = 0; i < proxy_cnt; i++) {
 							if (strcmp(client_addr, proxies[i]) == 0) {
 								realip = strdup(headerval);
 								break;
 							}
+						}
+					}
+					if (headerval != NULL && strcmp(header, "Content-Length") == 0) {
+						req_content_length = atoi(headerval);
+						if (debug_flag) {
+							printf("req_content_length = %d\n", req_content_length);
 						}
 					}
 					headerline = strtok_r(NULL, "\n", &tokr1);
@@ -640,7 +676,7 @@ int main(int argc, char * argv[]) {
 						break;
 					}
 					len = strlen(org);
-					for (i = 0; i < len - 4; i++) {
+					for (i = 0; i < len - 4 && i < bytes_len; i++) {
 						if (org[i] == '\r' && org[i+1] == '\n' && org[i+2] == '\r' && org[i+3] == '\n') {
 							find = 4;
 							break;
@@ -650,12 +686,47 @@ int main(int argc, char * argv[]) {
 						}
 					}
 					if (find) {
+						int start_fetch_time = time(NULL);
+						while (strlen(org) - i + find < req_content_length) {
+							if (time(NULL) - start_fetch_time > 120) {
+								printerr("Timeout, req_content_length: %d, current: %d", req_content_length, strlen(org));
+							}
+							in[0] = 0;
+							int nbytes = read(new_fd, org + bytes_len, 8000);
+							if (nbytes < 0) {
+								printerr("1-Read error");
+								return 1;
+							}
+							if (nbytes == 0) continue;
+							bytes_len += nbytes;
+							if (bytes_len >= 34000) {
+								printerr("Entity too large");
+								return 1;
+							}
+							if (debug_flag) {
+								printf("1-bytes_len: %d\n", bytes_len);
+							}
+						}
 						break;
 					} else {
-						read(new_fd, in, 8000);
-						strcat(org, in);
+						in[0] = 0;
+						int nbytes = read(new_fd, org + bytes_len, 8000);
+						if (nbytes < 0) {
+							printerr("2-Read error");
+							return 1;
+						}
+						if (nbytes == 0) continue;
+						bytes_len += nbytes;
+						if (debug_flag) {
+							printf("2-bytes_len: %d\n", bytes_len);
+						}
 					}
 				}
+				
+				if (debug_flag) {
+					printf("HTTP Data: %s\n", org);
+				}
+
 				strcpy(code, "200 OK");
 				if (!find) {
 					printf("Requet body not found.\n");
@@ -663,10 +734,16 @@ int main(int argc, char * argv[]) {
 				} else {
 					printf("Request body found.\n");
 					sprintf(buffer, "{\"err\":0,\"server\":\"Senorsen's git-a  uto-pull\",\"version\":\"%s\",\"hint\":\"Processing\"}", VERSION);
-					po = (char *) malloc(sizeof(char) * 8000);
-					int pos = i, j = 0;
-					for (i = pos + find; i <= len; i++) {
+					po = (char *) malloc(sizeof(char) * 34000);
+					int pos = i + find, j = 0;
+					for (i = pos; i <= bytes_len; i++) {
 						po[j++] = org[i];
+					}
+					po[j] = 0;
+					if (debug_flag) {
+						printf("HTTP Data now: %s\n", org);
+						printf("JSON: %s\n", po);
+						printf("JSON pos: %d, bytes_len: %d\n", pos, bytes_len);
 					}
 				}
 			}
