@@ -5,8 +5,8 @@
 # See `LICENSE' for more information. 
 #
 
-VERSION=0.4.77
-RELEASE=2
+VERSION=0.4.78
+RELEASE=1
 LIBDIR=tmp
 CFLAGS=
 CC=gcc
