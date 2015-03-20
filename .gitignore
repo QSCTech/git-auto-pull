@@ -2,12 +2,6 @@
 *.swp
 git-auto-pull-static_amd64
 git-auto-pull-static_i386
-json-c
-json-c-bin64
-json-c-bin32
-libgit2
-libgit2-bin64
-libgit2-bin32
 packages/rpm/git-auto-pull
 packages/deb/*.deb
 packages/rpm/*.rpm

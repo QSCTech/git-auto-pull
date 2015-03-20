@@ -22,40 +22,9 @@ PWDA=$PWD
 LIBDIR=`readlink -f "$LIBDIR"`
 mkdir -p $LIBDIR
 
-{
-	git clone https://github.com/json-c/json-c.git $LIBDIR/json-c
-	cd $LIBDIR/json-c
-	git checkout ec4879ac5b502ae81f6b73450b960ede11ad2560
-	cd $PWDA
-} || true
-{
-	git clone -n https://github.com/libgit2/libgit2.git $LIBDIR/libgit2
-	cd $LIBDIR/libgit2
-	# Compatitable with CentOS 6
-	git checkout b703049c6189fec223896999b9cf5d78efcb08d7
-	cd $PWDA
-} || true
-{
-	git clone git://git.libssh2.org/libssh2.git $LIBDIR/libssh2
-	cd $LIBDIR/libssh2
-	git pull
-	git checkout 8bb6cf7f956f01f411914cbc4946ed5166b7cfa5
-	cd $PWDA
-} || true
-{
-	git clone https://github.com/joyent/http-parser.git $LIBDIR/http-parser
-	cd $LIBDIR/http-parser
-	git checkout 53063b780be8bff84895006409ae390ca96be1cf
-	cd $PWDA
-} || true
-[ -f $LIBDIR/libgcrypt-1.6.2.tar.bz2 ] || wget ftp://ftp.gnupg.org/gcrypt/libgcrypt/libgcrypt-1.6.2.tar.bz2 -O $LIBDIR/libgcrypt-1.6.2.tar.bz2
-[ -d $LIBDIR/libgcrypt-1.6.2 ] || [ -d $LIBDIR/libgcrypt ] || (cd $LIBDIR; rm -rf libgcrypt libgcrypt-1.6.2; tar xavf libgcrypt-1.6.2.tar.bz2; mv libgcrypt-1.6.2 libgcrypt; cd $PWDA)
-[ -f $LIBDIR/libgpg-error-1.17.tar.bz2 ] || wget ftp://ftp.gnupg.org/gcrypt/libgpg-error/libgpg-error-1.17.tar.bz2 -O $LIBDIR/libgpg-error-1.17.tar.bz2
-[ -d $LIBDIR/libgpg-error-1.17 ] || [ -d $LIBDIR/libgpg-error ] || (cd $LIBDIR; rm -rf libgpg-error libgpg-error-1.17; tar xavf libgpg-error-1.17.tar.bz2; mv libgpg-error-1.17 libgpg-error; cd $PWDA)
-[ -f $LIBDIR/zlib-1.2.8.tar.gz ] || wget http://zlib.net/zlib-1.2.8.tar.gz -O $LIBDIR/zlib-1.2.8.tar.gz
-[ -d $LIBDIR/zlib ] || (cd $LIBDIR; rm -rf zlib-1.2.8 zlib; tar xavf zlib-1.2.8.tar.gz; mv zlib-1.2.8 zlib; cd $PWDA)
-[ -f $LIBDIR/openssl-1.0.2.tar.gz ] || wget https://www.openssl.org/source/openssl-1.0.2.tar.gz -O $LIBDIR/openssl-1.0.2.tar.gz
-[ -d $LIBDIR/openssl ] || (cd $LIBDIR; rm -rf openssl-1.0.2 openssl; tar xavf openssl-1.0.2.tar.gz; mv openssl-1.0.2 openssl; cd $PWDA)
+git submodule update --init --recursive
+echo Libraries downloaded.
+cp -rf $PWDA/libs/* $LIBDIR/
 
 echo $PWDA
 
