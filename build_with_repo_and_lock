@@ -1,6 +1,7 @@
 #!/bin/sh
 
 echo Awaiting for lock file...
-flock -x /tmp/GIT_AUTO_PULL_BUILD_LOCK -c "make WITH_REPO=yes deb rpm"
+mkdir -p tmp
+flock -x tmp/GIT_AUTO_PULL_BUILD_LOCK -c "make WITH_REPO=yes deb rpm"
 echo Done.
 
