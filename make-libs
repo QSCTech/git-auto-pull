@@ -30,6 +30,13 @@ cp -rf $PWDA/libs/* $LIBDIR/
 
 echo $PWDA
 
+echo "Preparing gettext..."
+cd $LIBDIR/gettext
+# gperf texinfo is needed
+./autogen.sh
+./configure
+make
+
 do_compile0() {
 	PATH00=$LIBDIR/$THINGS
 	PATH32=$LIBDIR/$THINGS-bin32
@@ -43,12 +50,15 @@ do_compile0() {
 	rm -rf $PATH64
 	mkdir -p $PATH32
 	mkdir -p $PATH64
-	cd $PATH00 && echo "Entering ${PATH00}..."
+	cd $PATH00 && echo "Entering ${PATH00}"
 	make clean || true
 	rm -rf Makefile
 	if [ -n "$OPT32" ]; then
 		$OPT32 --prefix=$PATH32
 	else
+		if [ -x autogen.sh ]; then
+			GETTEXT_PREFIX=$LIBDIR/gettext/gettext-runtime/src ./autogen.sh
+		fi
 		CCASFLAGS="-m32" CPPFLAGS="-m32" CFLAGS="-m32" ./configure --prefix=$PATH32 $PARA32
 	fi
 	(make || make) && make install || (echo "Make failed. "; return 1;)
@@ -56,6 +66,9 @@ do_compile0() {
 	if [ -n "$OPT64" ]; then
 		$OPT64 --prefix=$PATH64
 	else
+		if [ -x autogen.sh ]; then
+			GETTEXT_PREFIX=$LIBDIR/gettext/gettext-runtime/src ./autogen.sh
+		fi
 		CCASFLAGS="-m64" CPPFLAGS="-m64" CFLAGS="-m64" ./configure --prefix=$PATH64 $PARA64
 	fi
 	(make || make) && make install || (echo "Make failed. "; return 1;)
@@ -97,7 +110,7 @@ do_compile1() {
 	rm -rf $PATH64
 	mkdir -p $PATH32
 	mkdir -p $PATH64
-	cd $LIBDIR/$THINGS && echo "Entering $LIBDIR/${THINGS}..."
+	cd $LIBDIR/$THINGS && echo "Entering $LIBDIR/${THINGS}"
 	make clean || true
 	sh autogen.sh
 	CFLAGS=-m32 ./configure --prefix=$PATH32 && make && make install
