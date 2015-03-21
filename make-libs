@@ -26,7 +26,7 @@ mkdir -p $LIBDIR
 
 git submodule update --init --recursive
 echo Libraries downloaded.
-cp -rf $PWDA/libs/* $LIBDIR/
+cp -rf $PWDA/libs/. $LIBDIR/
 
 echo $PWDA
 
