@@ -7,6 +7,8 @@
 #
 # Requirement: sudo apt-get install gcc-multilib g++-multilib libtool autoconf automake libssh-dev libssh-dev:i386 # and etc...
 
+set -e
+
 if [ -n "$1" ]; then
 	LIBDIR=$1
 fi
