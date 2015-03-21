@@ -43,7 +43,7 @@ do_compile0() {
 	rm -rf $PATH64
 	mkdir -p $PATH32
 	mkdir -p $PATH64
-	cd $PATH00
+	cd $PATH00 && echo "Entering ${PATH00}..."
 	make clean || true
 	rm -rf Makefile
 	if [ -n "$OPT32" ]; then
@@ -97,7 +97,7 @@ do_compile1() {
 	rm -rf $PATH64
 	mkdir -p $PATH32
 	mkdir -p $PATH64
-	cd $LIBDIR/$THINGS
+	cd $LIBDIR/$THINGS && echo "Entering $LIBDIR/${THINGS}..."
 	make clean || true
 	sh autogen.sh
 	CFLAGS=-m32 ./configure --prefix=$PATH32 && make && make install
