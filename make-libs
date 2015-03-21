@@ -57,7 +57,7 @@ do_compile0() {
 		$OPT32 --prefix=$PATH32
 	else
 		if [ -x autogen.sh ]; then
-			GETTEXT_PREFIX=$LIBDIR/gettext/gettext-runtime/src ./autogen.sh
+			GETTEXT_PREFIX=$LIBDIR/gettext/gettext-runtime/src ./autogen.sh --skip-gnulib
 		fi
 		CCASFLAGS="-m32" CPPFLAGS="-m32" CFLAGS="-m32" ./configure --prefix=$PATH32 $PARA32
 	fi
@@ -67,7 +67,7 @@ do_compile0() {
 		$OPT64 --prefix=$PATH64
 	else
 		if [ -x autogen.sh ]; then
-			GETTEXT_PREFIX=$LIBDIR/gettext/gettext-runtime/src ./autogen.sh
+			GETTEXT_PREFIX=$LIBDIR/gettext/gettext-runtime/src ./autogen.sh --skip-gnulib
 		fi
 		CCASFLAGS="-m64" CPPFLAGS="-m64" CFLAGS="-m64" ./configure --prefix=$PATH64 $PARA64
 	fi
