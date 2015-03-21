@@ -45,7 +45,7 @@ do_compile0() {
 	mkdir -p $PATH64
 	cd $PATH00
 	make clean || true
-	rm Makefile
+	rm -rf Makefile
 	if [ -n "$OPT32" ]; then
 		$OPT32 --prefix=$PATH32
 	else
