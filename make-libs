@@ -25,17 +25,17 @@ LIBDIR=`readlink -f "$LIBDIR"`
 mkdir -p $LIBDIR
 
 git submodule update --init --recursive
+
+[ -f $LIBDIR/openssl-1.0.2a.tar.gz ] || { wget https://www.openssl.org/source/openssl-1.0.2a.tar.gz -O $LIBDIR/openssl-1.0.2a.tar.gz; rm -rf $LIBDIR/openssl; }
+[ -d $LIBDIR/openssl-1.0.2a ] || [ -d $LIBDIR/openssl ] || { cd $LIBDIR; rm -rf openssl openssl-1.0.2a; tar xavf openssl-1.0.2a.tar.gz; mv openssl-1.0.2a openssl; cd $PWDA; }
+
+[ -f $LIBDIR/libgpg-error-1.17.tar.bz2 ] || { wget ftp://ftp.gnupg.org/gcrypt/libgpg-error/libgpg-error-1.17.tar.bz2 -O $LIBDIR/libgpg-error-1.17.tar.bz2; rm -rf $LIBDIR/libgpg-error; }
+[ -d $LIBDIR/libgpg-error-1.17 ] || [ -d $LIBDIR/libgpg-error ] || { cd $LIBDIR; rm -rf libgpg-error libgpg-error-1.17; tar xavf libgpg-error-1.17.tar.bz2; mv libgpg-error-1.17 libgpg-error; cd $PWDA; }
+
 echo Libraries downloaded.
-cp -rf $PWDA/libs/. $LIBDIR/
+cp -rf $PWDA/libs/* $LIBDIR/
 
 echo $PWDA
-
-echo "Preparing gettext..."
-cd $LIBDIR/gettext
-# gperf texinfo is needed
-./autogen.sh --skip-gnulib
-./configure
-make
 
 do_compile0() {
 	PATH00=$LIBDIR/$THINGS
@@ -56,9 +56,7 @@ do_compile0() {
 	if [ -n "$OPT32" ]; then
 		$OPT32 --prefix=$PATH32
 	else
-		if [ -x autogen.sh ]; then
-			GETTEXT_PREFIX=$LIBDIR/gettext/gettext-runtime/src ./autogen.sh
-		fi
+		./autogen.sh
 		CCASFLAGS="-m32" CPPFLAGS="-m32" CFLAGS="-m32" ./configure --prefix=$PATH32 $PARA32
 	fi
 	(make || make) && make install || (echo "Make failed. "; return 1;)
@@ -66,9 +64,7 @@ do_compile0() {
 	if [ -n "$OPT64" ]; then
 		$OPT64 --prefix=$PATH64
 	else
-		if [ -x autogen.sh ]; then
-			GETTEXT_PREFIX=$LIBDIR/gettext/gettext-runtime/src ./autogen.sh
-		fi
+		./autogen.sh
 		CCASFLAGS="-m64" CPPFLAGS="-m64" CFLAGS="-m64" ./configure --prefix=$PATH64 $PARA64
 	fi
 	(make || make) && make install || (echo "Make failed. "; return 1;)
@@ -158,6 +154,7 @@ do_compile3() {
 	rm -rf $PATH64
 	mkdir -p $PATH32
 	mkdir -p $PATH64
+	cd $LIBDIR/$THINGS/; make clean || true
 	cp -r $LIBDIR/$THINGS/* $PATH32/
 	cp -r $LIBDIR/$THINGS/* $PATH64/
 	cd $PATH32
@@ -165,13 +162,11 @@ do_compile3() {
 	export CFLAGS="-m32"
 	export CPPFLAGS="-m32"
 	make package
-	make library
 	cd $PATH64
 	make clean || true
 	export CFLAGS="-m64"
 	export CPPFLAGS="-m64"
 	make package
-	make library
 	cd $PWDA
 }
 
@@ -201,7 +196,7 @@ do_compile4() {
 	TMPSTR_PWD=$(echo $TMPSTR_PWD | sed 's|\\|\\\\|g' | sed 's|/|\\/|g')
 	sed -i "s/SEN_LIB/$TMPSTR_PWD/g" $PWDA/tmp/patch_lib_1.patch
 	cd $LIBDIR/$THINGS
-	git checkout CMakeLists.txt
+	cp $PWDA/libs/$THINGS/CMakeLists.txt $LIBDIR/$THINGS/
 	patch -f < $LIBDIR/patch_lib_1.patch
 	patch -f < $LIBDIR/patch_lib_2.patch
 	cd $PATH32
@@ -219,7 +214,7 @@ do_compile4() {
 	TMPSTR_PWD=$(echo $TMPSTR_PWD | sed 's|\\|\\\\|g' | sed 's|/|\\/|g')
 	sed -i "s/SEN_LIB/$TMPSTR_PWD/g" $PWDA/tmp/patch_lib_1.patch
 	cd $LIBDIR/$THINGS
-	git checkout CMakeLists.txt
+	cp $PWDA/libs/$THINGS/CMakeLists.txt $LIBDIR/$THINGS/
 	patch -f < $LIBDIR/patch_lib_1.patch
 	patch -f < $LIBDIR/patch_lib_2.patch
 	cd $PATH64
