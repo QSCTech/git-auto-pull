@@ -194,10 +194,10 @@ do_compile4() {
 	cp miscellaneous/patch_lib_2.patch $LIBDIR/
 	TMPSTR_PWD="$LIBDIR/libssh2-bin32/include/"
 	TMPSTR_PWD=$(echo $TMPSTR_PWD | sed 's|\\|\\\\|g' | sed 's|/|\\/|g')
-	sed -i "s/SEN_INCLUDE/$TMPSTR_PWD/g" $PWDA/tmp/patch_lib_1.patch
+	sed -i "s/SEN_INCLUDE/$TMPSTR_PWD/g" $LIBDIR/patch_lib_1.patch
 	TMPSTR_PWD="$LIBDIR/libssh2-bin32/lib/libssh2.so"
 	TMPSTR_PWD=$(echo $TMPSTR_PWD | sed 's|\\|\\\\|g' | sed 's|/|\\/|g')
-	sed -i "s/SEN_LIB/$TMPSTR_PWD/g" $PWDA/tmp/patch_lib_1.patch
+	sed -i "s/SEN_LIB/$TMPSTR_PWD/g" $LIBDIR/patch_lib_1.patch
 	cd $LIBDIR/$THINGS
 	cp $PWDA/libs/$THINGS/CMakeLists.txt $LIBDIR/$THINGS/
 	patch -f < $LIBDIR/patch_lib_1.patch
@@ -212,10 +212,10 @@ do_compile4() {
 	cp miscellaneous/patch_lib_2.patch $LIBDIR/
 	TMPSTR_PWD="$LIBDIR/libssh2-bin64/include/"
 	TMPSTR_PWD=$(echo $TMPSTR_PWD | sed 's|\\|\\\\|g' | sed 's|/|\\/|g')
-	sed -i "s/SEN_INCLUDE/$TMPSTR_PWD/g" $PWDA/tmp/patch_lib_1.patch
+	sed -i "s/SEN_INCLUDE/$TMPSTR_PWD/g" $LIBDIR/patch_lib_1.patch
 	TMPSTR_PWD="$LIBDIR/libssh2-bin64/lib/libssh2.so"
 	TMPSTR_PWD=$(echo $TMPSTR_PWD | sed 's|\\|\\\\|g' | sed 's|/|\\/|g')
-	sed -i "s/SEN_LIB/$TMPSTR_PWD/g" $PWDA/tmp/patch_lib_1.patch
+	sed -i "s/SEN_LIB/$TMPSTR_PWD/g" $LIBDIR/patch_lib_1.patch
 	cd $LIBDIR/$THINGS
 	cp $PWDA/libs/$THINGS/CMakeLists.txt $LIBDIR/$THINGS/
 	patch -f < $LIBDIR/patch_lib_1.patch
