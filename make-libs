@@ -32,6 +32,9 @@ git submodule update --init --recursive
 [ -f $LIBDIR/libgpg-error-1.17.tar.bz2 ] || { wget ftp://ftp.gnupg.org/gcrypt/libgpg-error/libgpg-error-1.17.tar.bz2 -O $LIBDIR/libgpg-error-1.17.tar.bz2; rm -rf $LIBDIR/libgpg-error; }
 [ -d $LIBDIR/libgpg-error-1.17 ] || [ -d $LIBDIR/libgpg-error ] || { cd $LIBDIR; rm -rf libgpg-error libgpg-error-1.17; tar xavf libgpg-error-1.17.tar.bz2; mv libgpg-error-1.17 libgpg-error; cd $PWDA; }
 
+[ -f $LIBDIR/libgcrypt-1.6.3.tar.bz2 ] || { wget ftp://ftp.gnupg.org/gcrypt/libgcrypt/libgcrypt-1.6.3.tar.bz2 -O $LIBDIR/libgcrypt-1.6.3.tar.bz2; rm -rf $LIBDIR/libgcrypt; }
+[ -d $LIBDIR/libgcrypt-1.6.3 ] || [ -d $LIBDIR/libgcrypt ] || { cd $LIBDIR; rm -rf libgcrypt-1.6.3 libgcrypt; tar xavf libgcrypt-1.6.3.tar.bz2; mv libgcrypt-1.6.3 libgcrypt; cd $PWDA; }
+
 echo Libraries downloaded.
 cp -rf $PWDA/libs/* $LIBDIR/
 

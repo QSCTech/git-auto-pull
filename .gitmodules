@@ -6,18 +6,10 @@
 	path = libs/libgit2
 	url = https://github.com/libgit2/libgit2.git
 	branch = v0.22.0-rc1
-[submodule "libs/libssh2"]
-	path = libs/libssh2
-	url = git://git.libssh2.org/libssh2.git
-	branch = libssh2-1.5.0
 [submodule "libs/http-parser"]
 	path = libs/http-parser
 	url = https://github.com/joyent/http-parser.git
 	branch = v2.4.2
-[submodule "libs/libgcrypt"]
-	path = libs/libgcrypt
-	url = git://git.gnupg.org/libgcrypt.git
-	branch = libgcrypt-1.6.3
 [submodule "libs/zlib"]
 	path = libs/zlib
 	url = https://github.com/madler/zlib.git
