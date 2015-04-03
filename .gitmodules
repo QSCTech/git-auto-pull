@@ -14,3 +14,7 @@
 	path = libs/zlib
 	url = https://github.com/madler/zlib.git
 	branch = v1.2.8
+[submodule "libs/libssh2"]
+	path = libs/libssh2
+	url = git@github.com:libssh2/libssh2.git
+	branch = master
