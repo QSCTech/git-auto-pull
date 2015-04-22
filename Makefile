@@ -42,7 +42,7 @@ clean:
 prepack:
 	$(MAKE) -C miscellaneous all
 
-pack: deb rpm
+pack: deb rpm oth
 
 deb: prepack static64 static32
 	rm -rf packages/deb/*.deb
@@ -72,5 +72,11 @@ rpm: prepack static64 static32
 	./packages/build_rpm.sh $(VERSION) $(RELEASE) x86_64 tmp/git-auto-pull-static_amd64 $(WITH_REPO)
 	./packages/build_rpm.sh $(VERSION) $(RELEASE) i386 tmp/git-auto-pull-static_i386 $(WITH_REPO)
 	rm -rf packages/rpm/*.tar.gz
+
+oth: prepack static64 static32
+	rm -rf packages/oth/*.tar.gz
+	./packages/build_oth.sh $(VERSION) $(RELEASE) x86_64 tmp/git-auto-pull-static_amd64 $(WITH_REPO)
+	./packages/build_oth.sh $(VERSION) $(RELEASE) i386 tmp/git-auto-pull-static_i386 $(WITH_REPO)
+
 
 .PHONY: all static shared

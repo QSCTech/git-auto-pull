@@ -5,6 +5,8 @@ git-auto-pull-static_i386
 packages/rpm/git-auto-pull
 packages/deb/*.deb
 packages/rpm/*.rpm
+packages/oth/*
+!packages/oth/.githolder
 tmp
 *.crt
 
