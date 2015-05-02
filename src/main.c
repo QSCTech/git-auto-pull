@@ -591,12 +591,12 @@ int main(int argc, char * argv[]) {
 		printf("git-auto-pull %s\n", VERSION);
 		printf("Usage:	%s [OPTION...]\n\n", argv[0]);
 		printf("Help Options:\n");
-		printf("  -h, --help				Show help options\n");
-		printf("  -v, --version				Show program version\n");
+		printf("  -h, --help                   Show help options\n");
+		printf("  -v, --version                Show program version\n");
 		printf("\n");
 		printf("Developer Options:\n");
-		printf("  -d, --debug				Log debug info into log\n");
-		printf("  -t, --test                Test config syntax and exit\n");
+		printf("  -d, --debug                  Log debug info into log\n");
+		printf("  -t, --test                   Test config syntax and exit\n");
 		printf("\n");
 		return 0;
 	}
