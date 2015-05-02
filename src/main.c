@@ -564,6 +564,17 @@ int main(int argc, char * argv[]) {
 		return 0;
 	}
 
+	if (argc >= 2 && (strcmp(argv[1], "-t") == 0 || strcmp(argv[1], "--test") == 0)) {
+		printf("git-auto-pull is testing your config... ");
+		if (read_conf()) {
+			printf(" ERROR!! \n");
+			return 1;
+		} else {
+			printf(" OK\n");
+			return 0;
+		}
+	}
+
 	if (argc >= 2 && (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)) {
 		printf("git-auto-pull %s\n", VERSION);
 		printf("Usage:	%s [OPTION...]\n\n", argv[0]);
@@ -573,6 +584,7 @@ int main(int argc, char * argv[]) {
 		printf("\n");
 		printf("Developer Options:\n");
 		printf("  -d, --debug				Log debug info into log\n");
+		printf("  -t, --test                Test config syntax and exit\n");
 		printf("\n");
 		return 0;
 	}

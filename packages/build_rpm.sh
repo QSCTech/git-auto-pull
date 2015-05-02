@@ -10,7 +10,7 @@ BINFILE=$4
 VERSION=$1
 RELEASE=$2
 ARCH=$3
-FULLDIR="git-auto-pull-$VERSION-$2.$ARCH"
+FULLDIR="git-auto-pull-$VERSION-$RELEASE.$ARCH"
 SEMIDIR="git-auto-pull-$VERSION"
 mkdir -p packages/rpm
 rm -rf packages/rpm/$SEMIDIR
