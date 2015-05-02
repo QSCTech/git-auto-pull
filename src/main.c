@@ -53,6 +53,18 @@
 #define BACKLOG 100
 #define DEFAULT_PORT 8081
 
+// Color text in terminal - see: 
+//   http://stackoverflow.com/questions/3585846/color-text-in-terminal-aplications-in-unix
+#define KNRM  "\x1B[0m"
+#define KRED  "\x1B[31m"
+#define KGRN  "\x1B[32m"
+#define KYEL  "\x1B[33m"
+#define KBLU  "\x1B[34m"
+#define KMAG  "\x1B[35m"
+#define KCYN  "\x1B[36m"
+#define KWHT  "\x1B[37m"
+#define RESET "\033[0m"
+
 int debug_flag;
 
 // Sockets stuff
@@ -565,12 +577,12 @@ int main(int argc, char * argv[]) {
 	}
 
 	if (argc >= 2 && (strcmp(argv[1], "-t") == 0 || strcmp(argv[1], "--test") == 0)) {
-		printf("git-auto-pull is testing your config... ");
+		printf("git-auto-pull is testing your config... \n");
 		if (read_conf()) {
-			printf(" ERROR!! \n");
+			printf(" > Test " KRED "ERROR" RESET "!! \n");
 			return 1;
 		} else {
-			printf(" OK\n");
+			printf(" > Test " KGRN "OK" RESET "\n");
 			return 0;
 		}
 	}
