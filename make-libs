@@ -9,7 +9,7 @@
 
 set -e
 
-LIBS_REV=2
+LIBS_REV=`cat \`dirname $0\`/LIBSVER`
 
 if [ -n "$1" ]; then
 	LIBDIR=$1/$LIBS_REV
