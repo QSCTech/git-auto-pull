@@ -5,11 +5,11 @@
 [submodule "libs/libgit2"]
 	path = libs/libgit2
 	url = https://github.com/libgit2/libgit2.git
-	branch = v0.22.0-rc1
+	branch = v0.22.2
 [submodule "libs/http-parser"]
 	path = libs/http-parser
 	url = https://github.com/joyent/http-parser.git
-	branch = v2.4.2
+	branch = v2.5.0
 [submodule "libs/zlib"]
 	path = libs/zlib
 	url = https://github.com/madler/zlib.git
@@ -17,4 +17,4 @@
 [submodule "libs/libssh2"]
 	path = libs/libssh2
 	url = https://github.com/libssh2/libssh2.git
-	branch = master
+	branch = libssh2-1.5.0
