@@ -9,12 +9,14 @@
 
 set -e
 
+LIBS_REV=2
+
 if [ -n "$1" ]; then
-	LIBDIR=$1
+	LIBDIR=$1/$LIBS_REV
 fi
 
 if [ -z "$LIBDIR" ]; then
-	LIBDIR=tmp
+	LIBDIR=tmp/$LIBS_REV
 	echo "Use default path: $LIBDIR"
 else
 	echo "Use specified path: $LIBDIR"
@@ -22,7 +24,7 @@ fi
 
 PWDA=$PWD
 LIBDIR=`readlink -f "$LIBDIR"`
-mkdir -p $LIBDIR
+mkdir -p $LIBDIR/
 
 git submodule update --init --recursive
 
@@ -112,9 +114,9 @@ do_compile1() {
 	cd $LIBDIR/$THINGS && echo "Entering $LIBDIR/${THINGS}"
 	make clean || true
 	sh autogen.sh
-	CFLAGS=-m32 ./configure --prefix=$PATH32 && make && make install
+	CFLAGS="-w -m32" ./configure --prefix=$PATH32 && make && make install
 	make clean || true
-	CFLAGS=-m64 ./configure --prefix=$PATH64 && make && make install
+	CFLAGS="-w -m64" ./configure --prefix=$PATH64 && make && make install
 	cd $PWDA
 }
 
