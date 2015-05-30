@@ -22,9 +22,9 @@ else
 	echo "Use specified path: $LIBDIR"
 fi
 
+mkdir -p $LIBDIR/
 PWDA=$PWD
 LIBDIR=`readlink -f "$LIBDIR"`
-mkdir -p $LIBDIR/
 
 git submodule update --init --recursive
 
