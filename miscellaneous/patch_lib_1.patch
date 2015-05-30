@@ -1,6 +1,8 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 77a591f..11253bd 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -213,15 +213,11 @@ ELSE()
+@@ -213,16 +213,11 @@ ELSE()
  ENDIF()
  
  # Optional external dependency: libssh2
@@ -9,7 +11,8 @@
 -ENDIF()
 -IF (LIBSSH2_FOUND)
 -	ADD_DEFINITIONS(-DGIT_SSH)
--	INCLUDE_DIRECTORIES(${LIBSSH2_INCLUDE_DIR})
+-	INCLUDE_DIRECTORIES(${LIBSSH2_INCLUDE_DIRS})
+-	LINK_DIRECTORIES(${LIBSSH2_LIBRARY_DIRS})
 -	SET(LIBGIT2_PC_REQUIRES "${LIBGIT2_PC_REQUIRES} libssh2")
 -	SET(SSH_LIBRARIES ${LIBSSH2_LIBRARIES})
 -ENDIF()
