@@ -7,7 +7,7 @@
 
 VERSION=$(shell cat VERSION | sed 's/-.*//')
 RELEASE=$(shell cat VERSION | sed 's/.*-//')
-LIBDIR=tmp/$(shell cat LIBSVER)
+LIBDIR=$(shell echo -n tmp/; cat LIBSVER)
 CFLAGS=
 CC=gcc
 
