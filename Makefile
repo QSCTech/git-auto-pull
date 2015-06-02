@@ -58,10 +58,12 @@ deb: prepack static64 static32
 	cp miscellaneous/config.json packages/deb/git-auto-pull/etc/git-auto-pull/config.json
 	rm -rf packages/deb/git-auto-pull/usr/sbin/git-auto-pull
 	cp tmp/git-auto-pull-static_amd64 packages/deb/git-auto-pull/usr/sbin/git-auto-pull
+	strip packages/deb/git-auto-pull/usr/sbin/git-auto-pull
 	./packages/deb/build_control.sh packages/deb/git-auto-pull/usr/sbin/git-auto-pull $(VERSION) $(RELEASE) amd64
 	mv control packages/deb/git-auto-pull/DEBIAN/control
 	fakeroot dpkg -b packages/deb/git-auto-pull packages/deb/git-auto-pull_$(VERSION)-$(RELEASE)_amd64.deb 
 	cp tmp/git-auto-pull-static_i386 packages/deb/git-auto-pull/usr/sbin/git-auto-pull
+	strip packages/deb/git-auto-pull/usr/sbin/git-auto-pull
 	./packages/deb/build_control.sh packages/deb/git-auto-pull/usr/sbin/git-auto-pull $(VERSION) $(RELEASE) i386
 	mv control packages/deb/git-auto-pull/DEBIAN/control
 	fakeroot dpkg -b packages/deb/git-auto-pull packages/deb/git-auto-pull_$(VERSION)-$(RELEASE)_i386.deb
