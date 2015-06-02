@@ -13,7 +13,7 @@ do_systemd_inst() {
 	systemctl daemon-reload
 	systemctl enable git-auto-pull.service
 	[ -f /usr/sbin/policy-rc.d ] && /usr/sbin/policy-rc.d && systemctl restart git-auto-pull.service
-    [ !-f /usr/sbin/policy-rc.d ] && systemctl restart git-auto-pull.service
+    [ ! -f /usr/sbin/policy-rc.d ] && systemctl restart git-auto-pull.service
 }
 
 do_sysvinit_inst() {
@@ -22,7 +22,7 @@ do_sysvinit_inst() {
 	chown root:root /etc/init.d/git-auto-pull
 	update-rc.d git-auto-pull defaults 2>&1 >/dev/null || chkconfig git-auto-pull on || true
 	[ -f /usr/sbin/policy-rc.d ] && /usr/sbin/policy-rc.d && service git-auto-pull restart
-    [ !-f /usr/sbin/policy-rc.d ] && service git-auto-pull restart
+    [ ! -f /usr/sbin/policy-rc.d ] && service git-auto-pull restart
 }
 
 pidof systemd 2>&1 >/dev/null && do_systemd_inst || do_sysvinit_inst || true
