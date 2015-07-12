@@ -612,7 +612,16 @@ int main(int argc, char * argv[]) {
 		freopen(LOG_ERR_PATH, "a", stderr);
 		setbuf(stdout, NULL);
 		setbuf(stderr, NULL);
-		daemon(0, 1);
+    	daemon(0, 1);
+		int pid = getpid();
+    	FILE * fp;
+    	fp = fopen(PID_PATH, "w");
+    	if (fp == NULL) {
+    		fprintf(stderr, "Error writing pid file!\n");
+    	} else {
+    		fprintf(fp, "%d", pid);
+    		fclose(fp);
+    	}
 	}
 	printf("%s %s\n", argv[0], VERSION);
 	if (read_conf()) {
@@ -620,15 +629,6 @@ int main(int argc, char * argv[]) {
 		return 1;
 	}
 	bind_port();
-	int pid = getpid();
-	FILE * fp;
-	fp = fopen(PID_PATH, "w");
-	if (fp == NULL) {
-		fprintf(stderr, "Error writing pid file!\n");
-	} else {
-		fprintf(fp, "%d", pid);
-		fclose(fp);
-	}
 	while (1) {
 		sin_size = sizeof(struct sockaddr_in);
 		if ((new_fd = accept(sockfd, (struct sockaddr *) &their_addr, &sin_size)) == -1) {

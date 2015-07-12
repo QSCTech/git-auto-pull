@@ -8,7 +8,6 @@
 
 do_systemd_inst() {
 	cp /usr/share/git-auto-pull/git-auto-pull.service /lib/systemd/system/git-auto-pull.service
-	chmod 755 /lib/systemd/system/git-auto-pull.service
 	chown root:root /lib/systemd/system/git-auto-pull.service
 	systemctl daemon-reload
 	systemctl enable git-auto-pull.service
@@ -25,10 +24,12 @@ do_sysvinit_inst() {
     [ ! -f /usr/sbin/policy-rc.d ] && service git-auto-pull restart
 }
 
-pidof systemd 2>&1 >/dev/null && do_systemd_inst || do_sysvinit_inst || true
-[ -f /usr/share/git-auto-pull/qsc.list ] && cp /usr/share/git-auto-pull/qsc.list /etc/apt/sources.list.d/qsc.list
+pidof systemd 2>&1 >/dev/null && do_systemd_inst || true
+pidof systemd 2>&1 >/dev/null || do_sysvinit_inst || true
+
+[ -f /usr/share/git-auto-pull/qsc.list ] && cp /usr/share/git-auto-pull/qsc.list /etc/apt/sources.list.d/qsc.list || true
 [ -f /usr/share/git-auto-pull/qsc.public.key ] && {
 	apt-key add /usr/share/git-auto-pull/qsc.public.key 2>&1 >/dev/null || true
-}
+} || true
 
 
