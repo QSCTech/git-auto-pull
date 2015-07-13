@@ -577,7 +577,7 @@ int main(int argc, char * argv[]) {
 	char post_content[25000], org[34000], *po;
 	long filesize, range=0, peername, i, req_content_length, bytes_len;
 
-    signal(SIGSEGV, handler);
+    signal(SIGSEGV, segfault_handler);
 
 	if (argc >= 2 && (strcmp(argv[1], "-d") == 0 || strcmp(argv[1], "--debug") == 0)) {
 		debug_flag = 1;
