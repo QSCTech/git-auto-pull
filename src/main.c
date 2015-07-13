@@ -557,6 +557,18 @@ int socket_select(fd) {
 	}
 }
 
+// From: http://stackoverflow.com/questions/77005/how-to-generate-a-stacktrace-when-my-gcc-c-app-crashes
+void segfault_handler(int sig) {
+    void *array[10];
+    size_t size;
+
+    size = backgtrace(array, 10);
+
+    fprintf(stderr, "Error: signal %d: \n", sig);
+    backtrace_symbols_fd(array, size, STDERR_FILENO);
+    exit(1);
+}
+
 int main(int argc, char * argv[]) {
 	char in[25000],  sent[500], code[50], file[200], mime[100], moved[200], length[100], auth[200], auth_dir[500], start[100], end[100];
 	char *result=NULL, *hostname, *hostnamef, *lines, *ext=NULL, *extf, *auth_dirf=NULL, *authf=NULL, *rangetmp, *header, *headerval, *headerline, *realip;
@@ -564,6 +576,8 @@ int main(int argc, char * argv[]) {
 	char buffer[25000], headers[25000], charset[30], client_addr[32];
 	char post_content[25000], org[34000], *po;
 	long filesize, range=0, peername, i, req_content_length, bytes_len;
+
+    signal(SIGSEGV, handler);
 
 	if (argc >= 2 && (strcmp(argv[1], "-d") == 0 || strcmp(argv[1], "--debug") == 0)) {
 		debug_flag = 1;
