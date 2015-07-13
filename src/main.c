@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <execinfo.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
@@ -562,7 +563,7 @@ void segfault_handler(int sig) {
     void *array[10];
     size_t size;
 
-    size = backgtrace(array, 10);
+    size = backtrace(array, 10);
 
     fprintf(stderr, "Error: signal %d: \n", sig);
     backtrace_symbols_fd(array, size, STDERR_FILENO);
