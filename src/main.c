@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <execinfo.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
@@ -557,6 +558,18 @@ int socket_select(fd) {
 	}
 }
 
+// From: http://stackoverflow.com/questions/77005/how-to-generate-a-stacktrace-when-my-gcc-c-app-crashes
+void segfault_handler(int sig) {
+    void *array[10];
+    size_t size;
+
+    size = backtrace(array, 10);
+
+    fprintf(stderr, "Error: signal %d: \n", sig);
+    backtrace_symbols_fd(array, size, STDERR_FILENO);
+    exit(1);
+}
+
 int main(int argc, char * argv[]) {
 	char in[25000],  sent[500], code[50], file[200], mime[100], moved[200], length[100], auth[200], auth_dir[500], start[100], end[100];
 	char *result=NULL, *hostname, *hostnamef, *lines, *ext=NULL, *extf, *auth_dirf=NULL, *authf=NULL, *rangetmp, *header, *headerval, *headerline, *realip;
@@ -564,6 +577,8 @@ int main(int argc, char * argv[]) {
 	char buffer[25000], headers[25000], charset[30], client_addr[32];
 	char post_content[25000], org[34000], *po;
 	long filesize, range=0, peername, i, req_content_length, bytes_len;
+
+    signal(SIGSEGV, segfault_handler);
 
 	if (argc >= 2 && (strcmp(argv[1], "-d") == 0 || strcmp(argv[1], "--debug") == 0)) {
 		debug_flag = 1;
@@ -612,7 +627,16 @@ int main(int argc, char * argv[]) {
 		freopen(LOG_ERR_PATH, "a", stderr);
 		setbuf(stdout, NULL);
 		setbuf(stderr, NULL);
-		daemon(0, 1);
+    	daemon(0, 1);
+		int pid = getpid();
+    	FILE * fp;
+    	fp = fopen(PID_PATH, "w");
+    	if (fp == NULL) {
+    		fprintf(stderr, "Error writing pid file!\n");
+    	} else {
+    		fprintf(fp, "%d", pid);
+    		fclose(fp);
+    	}
 	}
 	printf("%s %s\n", argv[0], VERSION);
 	if (read_conf()) {
@@ -620,15 +644,6 @@ int main(int argc, char * argv[]) {
 		return 1;
 	}
 	bind_port();
-	int pid = getpid();
-	FILE * fp;
-	fp = fopen(PID_PATH, "w");
-	if (fp == NULL) {
-		fprintf(stderr, "Error writing pid file!\n");
-	} else {
-		fprintf(fp, "%d", pid);
-		fclose(fp);
-	}
 	while (1) {
 		sin_size = sizeof(struct sockaddr_in);
 		if ((new_fd = accept(sockfd, (struct sockaddr *) &their_addr, &sin_size)) == -1) {

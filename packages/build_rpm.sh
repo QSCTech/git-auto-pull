@@ -20,6 +20,7 @@ if [ "$5" = "yes" ]; then
 fi
 cp miscellaneous/*.crt miscellaneous/config.json miscellaneous/git-auto-pull.initd miscellaneous/git-auto-pull.service packages/rpm/$SEMIDIR
 cp $BINFILE packages/rpm/$SEMIDIR/git-auto-pull.bin
+strip packages/rpm/$SEMIDIR/git-auto-pull.bin
 cp $BINFILE git-auto-pull.bin
 cd packages/rpm
 tar zcvf ${SEMIDIR}.tar.gz $SEMIDIR
