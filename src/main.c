@@ -400,9 +400,10 @@ void parse_post_obj(char * str, char * realip) {
 				chdir(repo_path[i]);
 
 				operate_git_pull(i, iwhtype, pwd.pw_dir);
-				break;
 			}
 		}
+        // Long time sleep, for some HTTP related reasons.
+        sleep(10); 
 	} else {
 		printf("Not a JSON\n");
 	}
@@ -448,6 +449,7 @@ void operate_git_pull(int i, int iwhtype, char * user_home) {
 		return;
 	}
 	if (iwhtype == 2) {
+        // FIXME: Shouldn't use fixed CA certficates!
 		// from GitHub
 		// Set CA Cert Path to Our /usr/share directory, 
 		//   to avoid of certificate errors. 
@@ -523,13 +525,12 @@ void operate_git_pull(int i, int iwhtype, char * user_home) {
 	}
 */
 	git_annotated_commit_free(myhead);
-	// Dirty hack!!
+	// FIXME: Dirty hack!!
 	char cmd[1000];
 	sprintf(cmd, "git merge %s", remote_branch);
 	system(cmd);
 	system(scr_after_pull[i]);
-	printf("Repository %s finished.\n", repo_name[i]);
-	sleep(10); // Long time sleep
+	printf("Repo path: %s : finished.\n", repo_path[i]);
 }
 
 int socket_select(fd) {
