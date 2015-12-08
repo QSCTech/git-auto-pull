@@ -1,6 +1,6 @@
 # git-auto-pull
 
-[![Build Status](https://ci.zjuqsc.com/projects/3/status.png?ref=master)](https://ci.zjuqsc.com/projects/3)
+[![Build Status](https://git.zjuqsc.com/ci/projects/3/status.png?ref=master)](https://git.zjuqsc.com/ci/projects/3)
 A tool to handle GitLab and GitHub's Push event Webhook.
 
 ## Usage
