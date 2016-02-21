@@ -54,6 +54,9 @@
 #define BACKLOG 100
 #define DEFAULT_PORT 8081
 
+#define MAX_ENTITY_SIZE 340000
+#define MAX_HEADER_SIZE 25000
+
 // Color text in terminal - see: 
 //   http://stackoverflow.com/questions/3585846/color-text-in-terminal-aplications-in-unix
 #define KNRM  "\x1B[0m"
@@ -572,11 +575,11 @@ void segfault_handler(int sig) {
 }
 
 int main(int argc, char * argv[]) {
-	char in[25000],  sent[500], code[50], file[200], mime[100], moved[200], length[100], auth[200], auth_dir[500], start[100], end[100];
-	char *result=NULL, *hostname, *hostnamef, *lines, *ext=NULL, *extf, *auth_dirf=NULL, *authf=NULL, *rangetmp, *header, *headerval, *headerline, *realip;
+	char in[MAX_ENTITY_SIZE],  sent[500], code[50], file[200], mime[100], moved[200], length[100], auth[200], auth_dir[500], start[100], end[100];
+	char *result=NULL, *hostname, *hostnamef, *lines, *ext=NULL, *extf, *auth_dirf = NULL, *authf = NULL, *rangetmp, *header, *headerval, *headerline, *realip;
 	int buffer_length;
-	char buffer[25000], headers[25000], charset[30], client_addr[32];
-	char post_content[25000], org[34000], *po;
+    char buffer[MAX_ENTITY_SIZE], headers[MAX_ENTITY_SIZE + MAX_HEADER_SIZE], charset[30], client_addr[32];
+	char post_content[MAX_ENTITY_SIZE], org[MAX_ENTITY_SIZE + MAX_HEADER_SIZE], *po;
 	long filesize, range=0, peername, i, req_content_length, bytes_len;
 
     signal(SIGSEGV, segfault_handler);
@@ -717,10 +720,10 @@ int main(int argc, char * argv[]) {
 					}
 					len = strlen(org);
 					for (i = 0; i < len - 4 && i < bytes_len; i++) {
-						if (org[i] == '\r' && org[i+1] == '\n' && org[i+2] == '\r' && org[i+3] == '\n') {
+						if (org[i] == '\r' && org[i + 1] == '\n' && org[i + 2] == '\r' && org[i + 3] == '\n') {
 							find = 4;
 							break;
-						} else if (org[i] == '\n' && org[i+1] == '\n') {
+						} else if (org[i] == '\n' && org[i + 1] == '\n') {
 							find = 2;
 							break;
 						}
@@ -740,7 +743,7 @@ int main(int argc, char * argv[]) {
 							if (nbytes == 0) continue;
 							bytes_len += nbytes;
 							if (bytes_len >= 34000) {
-								printerr("Entity too large");
+								printerr("Entity too large: %d bytes", bytes_len);
 								return 1;
 							}
 							if (debug_flag) {
