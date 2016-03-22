@@ -1,0 +1,7 @@
+'git-auto-pull':
+  script:
+  - git submodule update --init
+  - ls -la
+  - ./make-libs $HOME/tmp
+  - make LIBDIR=$HOME/tmp/`cat LIBSVER` static64 static32 deb rpm
+  tags:
